@@ -6,221 +6,221 @@
   ![License](https://img.shields.io/badge/license-MIT-green)
   ![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)
   
-  **Ett lokalt minnessystem för att förbättra AI-interaktioner i Cursor**
+  **A local memory system to enhance AI interactions in Cursor**
   
   [Installation](#-installation) • 
-  [Funktioner](#-funktioner) • 
-  [Användning](#-användning) • 
-  [API-referens](#-api-referens) • 
-  [Bidrag](#-bidrag)
+  [Features](#-features) • 
+  [Usage](#-usage) • 
+  [API Reference](#-api-reference) • 
+  [Contributions](#-contributions)
   
 </div>
 
-## ✨ Översikt
+## ✨ Overview
 
-**Cursor AI Memory** (SAM) är en kraftfull lokal minneslösning som väsentligt förbättrar AI-interaktioner i Cursor IDE. Genom att spara konversationshistorik och kontextuell kunskap lokalt, ger systemet AI:n längre och mer konsekvent minne över tiden.
+**Cursor AI Memory** (SAM) is a powerful local memory solution that significantly enhances AI interactions in the Cursor IDE. By saving conversation history and contextual knowledge locally, the system provides AI with longer and more consistent memory over time.
 
 <p align="center">
   <img src="https://via.placeholder.com/800x400?text=Cursor+AI+Memory+Screenshot" alt="Cursor AI Memory Screenshot" width="800"/>
 </p>
 
-### 🌟 Huvudfunktioner
+### 🌟 Key Features
 
-- **Sömlös minnesintegrering** för Claude och Gemini i Cursor
-- **Kraftfull TF-IDF-sökning** för att hitta relevant historik
-- **Kontextualiserade AI-svar** baserade på din tidigare konversationshistorik
-- **Kunskapsbasfunktionalitet** för att lagra viktiga fakta permanent
-- **Modern webbgränssnitt** för att utforska och hantera minnen
-- **Lokalt och privat** - all data förblir på din dator
+- **Seamless memory integration** for Claude and Gemini in Cursor
+- **Powerful TF-IDF search** to find relevant history
+- **Contextualized AI responses** based on your previous conversation history
+- **Knowledge base functionality** to permanently store important facts
+- **Modern web interface** to explore and manage memories
+- **Local and private** - all data remains on your computer
 
 ## 🚀 Installation
 
-### Förutsättningar
+### Prerequisites
 
-- Node.js (v14 eller senare)
-- npm (v6 eller senare)
-- En installation av Cursor IDE
+- Node.js (v14 or later)
+- npm (v6 or later)
+- A Cursor IDE installation
 
-### Snabbinstallation
+### Quick Installation
 
 ```bash
-# Klona repot (eller ladda ned)
-git clone https://github.com/din-användare/cursor-ai-memory.git
+# Clone the repo (or download)
+git clone https://github.com/your-username/cursor-ai-memory.git
 cd cursor-ai-memory
 
-# Installera beroenden
+# Install dependencies
 npm install
 
-# Starta både minnesservern och integrationsproxyn
+# Start both the memory server and integration proxy
 npm run dev
 ```
 
-Det räcker! Besök sedan [http://localhost:3000](http://localhost:3000) för att komma åt webbgränssnittet.
+That's it! Then visit [http://localhost:3000](http://localhost:3000) to access the web interface.
 
-## 🛠️ Funktioner
+## 🛠️ Features
 
-### 1. Minneshantering
+### 1. Memory Management
 
-Systemet sparar automatiskt all konversationshistorik och kan hitta relevant kontext från tidigare samtal när du ställer liknande frågor.
+The system automatically saves all conversation history and can find relevant context from previous conversations when you ask similar questions.
 
-### 2. Kontextberikning
+### 2. Context Enrichment
 
-AI-svaren förbättras genom att lägga till relevant kontext från tidigare konversationer, vilket gör att AI:n kan:
-- **Komma ihåg** tidigare diskuterade koncept
-- **Bygga vidare** på tidigare svar
-- **Konsekvent följa upp** över längre tidsperioder
+AI responses are improved by adding relevant context from previous conversations, allowing the AI to:
+- **Remember** previously discussed concepts
+- **Build upon** previous answers
+- **Consistently follow up** over longer time periods
 
-### 3. Kunskapsbas
+### 3. Knowledge Base
 
-Lagra viktig information permanent:
-- **Manuell lagring** av viktig kunskap
-- **Automatisk extraktion** av viktiga fakta från AI-svar
-- **Taggning och sökning** av kunskapsenheter
+Store important information permanently:
+- **Manual storage** of important knowledge
+- **Automatic extraction** of key facts from AI responses
+- **Tagging and searching** of knowledge items
 
-### 4. Dynamisk sökning
+### 4. Dynamic Search
 
-Sök genom all konversationshistorik och kunskapsbas för att hitta relevant information om ditt nuvarande projekt.
+Search through all conversation history and knowledge base to find relevant information about your current project.
 
-## 📊 Systemarkitektur
+## 📊 System Architecture
 
-Systemet består av tre huvudkomponenter:
+The system consists of three main components:
 
-1. **MCP Server (Memory Control Process)** - Hjärtpunkten i systemet som hanterar lagring och hämtning av minnen
-2. **Cursor Integration** - Integrationslagret som kopplar Cursor till minnessystemet
-3. **Webbgränssnitt** - Ger en visuell representation av lagrade minnen
-4. **Systemövervakning** - Ett modernt övervakningsgränssnitt för att kontrollera båda servrarnas status
+1. **MCP Server (Memory Control Process)** - The heart of the system that handles the storage and retrieval of memories
+2. **Cursor Integration** - The integration layer that connects Cursor to the memory system
+3. **Web Interface** - Provides a visual representation of stored memories
+4. **System Monitoring** - A modern monitoring interface to check the status of both servers
 
 ```
 ┌───────────────┐      ┌────────────────────┐      ┌─────────────────┐
 │               │      │                    │      │                 │
-│  Cursor IDE   │<─────│ Integrationsproxy  │<─────│   MCP Server    │
-│               │      │ (cursor-integration)│      │ (minneslagring) │
+│  Cursor IDE   │<─────│ Integration Proxy  │<─────│   MCP Server    │
+│               │      │ (cursor-integration)│      │ (memory storage)│
 └───────────────┘      └────────────────────┘      └─────────────────┘
                                                           │
                                                           │
                                                           v
                                                    ┌─────────────────┐
                                                    │                 │
-                                                   │  Webbgränssnitt │
+                                                   │  Web Interface  │
                                                    │                 │
                                                    └─────────────────┘
 ```
 
-## 🖥️ Användning
+## 🖥️ Usage
 
-### Webbgränssnittet
+### Web Interface
 
-När servern är igång, besök [http://localhost:3000](http://localhost:3000) för att utforska:
+When the server is running, visit [http://localhost:3000](http://localhost:3000) to explore:
 
-- **Konversationsfliken** - Bläddra genom din AI-chatthistorik
-- **Kunskapsfliken** - Hantera din sparade kunskap
-- **Sökfliken** - Hitta specifik information
-- **Inställningsfliken** - Konfigurera systemet
+- **Conversations Tab** - Browse through your AI chat history
+- **Knowledge Tab** - Manage your saved knowledge
+- **Search Tab** - Find specific information
+- **Settings Tab** - Configure the system
 
-### Systemövervakning
+### System Monitoring
 
-För att övervaka systemets hälsa, besök [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
+To monitor system health, visit [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
 
-Här kan du:
-- Se status för minnesservern och integrationsproxyn
-- Övervaka minneskonsumtion och CPU-användning
-- Se detaljerad statistik över konversationer och kunskapsdata
-- Hantera servrarna (starta om etc.)
+Here you can:
+- See the status of the memory server and integration proxy
+- Monitor memory consumption and CPU usage
+- View detailed statistics on conversations and knowledge data
+- Manage the servers (restart etc.)
 
-### Integration med Cursor
+### Integration with Cursor
 
-#### Metod 1: Proxylösning (rekommenderad)
+#### Method 1: Proxy Solution (recommended)
 
-För att integrera med Cursor, använd vår proxylösning:
+To integrate with Cursor, use our proxy solution:
 
-1. Se till att både minnesservern och proxyn körs:
+1. Make sure both the memory server and proxy are running:
    ```bash
    npm run dev
    ```
 
-2. Konfigurera Cursor att använda din lokala proxy för AI-anrop:
-   - För Claude: `http://localhost:3100/proxy/claude`
-   - För Gemini: `http://localhost:3100/proxy/gemini`
+2. Configure Cursor to use your local proxy for AI calls:
+   - For Claude: `http://localhost:3100/proxy/claude`
+   - For Gemini: `http://localhost:3100/proxy/gemini`
 
-#### Metod 2: Direkt API-integration
+#### Method 2: Direct API Integration
 
-Använd minneskomponenten direkt i dina egna skript:
+Use the memory component directly in your own scripts:
 
 ```javascript
 const CursorMemoryExtension = require('./cursor-memory-extension');
 const memory = new CursorMemoryExtension();
 
-// Starta en ny konversation
+// Start a new conversation
 await memory.startNewConversation('claude');
 
-// Använd minnesförbättrad interaktion
+// Use memory-enhanced interaction
 const response = await memory.fullMemoryAugmentedInteraction(
-  "Min fråga",
+  "My question",
   (prompt) => callYourAIFunction(prompt)
 );
 ```
 
-## 📚 API-referens
+## 📚 API Reference
 
-### Minnesserver (port 3000)
+### Memory Server (port 3000)
 
-| Metod | Endpoint | Beskrivning |
+| Method | Endpoint | Description |
 |-------|----------|-------------|
-| GET | `/api/memory/conversations` | Hämta alla konversationer |
-| POST | `/api/memory/conversation` | Skapa eller uppdatera en konversation |
-| GET | `/api/memory/conversation/:id` | Hämta en specifik konversation |
-| DELETE | `/api/memory/conversation/:id` | Radera en konversation |
-| GET | `/api/memory/knowledge` | Hämta all kunskap |
-| POST | `/api/memory/knowledge` | Lägg till eller uppdatera kunskap |
-| GET | `/api/memory/knowledge/:key` | Hämta specifik kunskap |
-| DELETE | `/api/memory/knowledge/:key` | Radera kunskap |
-| GET | `/api/memory/search` | Sök i minnen |
-| POST | `/api/memory/generate-context` | Generera kontext för prompt |
+| GET | `/api/memory/conversations` | Retrieve all conversations |
+| POST | `/api/memory/conversation` | Create or update a conversation |
+| GET | `/api/memory/conversation/:id` | Retrieve a specific conversation |
+| DELETE | `/api/memory/conversation/:id` | Delete a conversation |
+| GET | `/api/memory/knowledge` | Retrieve all knowledge |
+| POST | `/api/memory/knowledge` | Add or update knowledge |
+| GET | `/api/memory/knowledge/:key` | Retrieve specific knowledge |
+| DELETE | `/api/memory/knowledge/:key` | Delete knowledge |
+| GET | `/api/memory/search` | Search memories |
+| POST | `/api/memory/generate-context` | Generate context for prompt |
 
-### Integrationsproxy (port 3100)
+### Integration Proxy (port 3100)
 
-| Metod | Endpoint | Beskrivning |
+| Method | Endpoint | Description |
 |-------|----------|-------------|
-| POST | `/proxy/claude` | Anropa Claude AI med minnesförbättring |
-| POST | `/proxy/gemini` | Anropa Gemini AI med minnesförbättring |
+| POST | `/proxy/claude` | Call Claude AI with memory enhancement |
+| POST | `/proxy/gemini` | Call Gemini AI with memory enhancement |
 
-## 🔒 Säkerhet
+## 🔒 Security
 
-Detta projekt är avsett för **lokal användning**. Minnesservern lagrar all konversations- och kunskapsdata lokalt på din maskin. 
+This project is intended for **local use**. The memory server stores all conversation and knowledge data locally on your machine.
 
-⚠️ **Notera:** Systemet har inte implementerat avancerad autentisering eller kryptering, så använd inte i produktionsmiljöer utan lämpliga säkerhetskontroller.
+⚠️ **Note:** The system has not implemented advanced authentication or encryption, so do not use in production environments without appropriate security controls.
 
 ## 🛣️ Roadmap
 
-- [ ] **Vektorbaserad semantisk sökning** för bättre relevansfiltrering
-- [ ] **Browser-extension** för sömlös Cursor-integration
-- [ ] **Automatisk kunskapsextraktion** från konversationer
-- [ ] **Databasintegrering** för hantering av stora datamängder
-- [ ] **Avancerad kontexthantering** med historisk-kontext-modeller
-- [ ] **Säkerhetsförbättringar** med kryptering och autentisering
+- [ ] **Vector-based semantic search** for better relevance filtering
+- [ ] **Browser extension** for seamless Cursor integration
+- [ ] **Automatic knowledge extraction** from conversations
+- [ ] **Database integration** for handling large amounts of data
+- [ ] **Advanced context handling** with historical-context models
+- [ ] **Security improvements** with encryption and authentication
 
-## 👥 Bidrag
+## 👥 Contributions
 
-Bidrag välkomnas! Om du vill bidra:
+Contributions are welcome! If you want to contribute:
 
-1. Forka repot
-2. Skapa din feature branch (`git checkout -b feature/amazing-feature`)
-3. Commita dina ändringar (`git commit -m 'Add amazing feature'`)
-4. Pusha till branchen (`git push origin feature/amazing-feature`)
-5. Öppna en Pull Request
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📄 Licens
+## 📄 License
 
-Detta projekt är licensierat under MIT-licensen - se [LICENSE](LICENSE) för detaljer.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-## 📬 Kontakt
+## 📬 Contact
 
-David - [Din E-post](mailto:din-email@example.com)
+David - [Your Email](mailto:your-email@example.com)
 
-Projektlänk: [https://github.com/din-användare/cursor-ai-memory](https://github.com/din-användare/cursor-ai-memory)
+Project Link: [https://github.com/your-username/cursor-ai-memory](https://github.com/your-username/cursor-ai-memory)
 
 ---
 
 <div align="center">
-  <sub>Byggd med ❤️ för bättre AI-interaktion i Cursor</sub>
+  <sub>Built with ❤️ for better AI interaction in Cursor</sub>
 </div> 
