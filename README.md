@@ -213,6 +213,14 @@ Contributions are welcome! If you want to contribute:
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
+## 💝 Support the Developer
+
+If you find this project helpful, consider buying the developer a coffee:
+
+<a href="https://www.buymeacoffee.com/screamm" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50px">
+</a>
+
 ## 📬 Contact
 
 David - [Your Email](mailto:your-email@example.com)
