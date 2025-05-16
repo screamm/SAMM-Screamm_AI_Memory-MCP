@@ -1,0 +1,16 @@
+{
+  "javascript-async-patterns": {
+    "data": "Det finns flera sätt att hantera asynkronitet i JavaScript:\n1. Callbacks - Traditionell metod men kan leda till callback-helvete\n2. Promises - Bättre hantering med .then() och .catch()\n3. Async/await - Modernaste sättet, gör koden mer läsbar\n4. Observables (RxJS) - För hantering av event-strömmar",
+    "metadata": {
+      "source": "claude-1747407395004",
+      "timestamp": "2025-05-16T14:56:35.113Z",
+      "topic": "JavaScript",
+      "tags": [
+        "async",
+        "promises",
+        "callbacks"
+      ]
+    },
+    "lastUpdated": "2025-05-16T14:56:35.117Z"
+  }
+}

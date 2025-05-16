@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursor AI Memory - Minneshanterare</title>
+  <style>
+    :root {
+      --primary-color: #4a6cf7;
+      --secondary-color: #f2f5ff;
+      --accent-color: #6d8bff;
+      --text-color: #333;
+      --light-gray: #f5f5f5;
+      --border-color: #ddd;
+      --success-color: #4caf50;
+      --danger-color: #f44336;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: #f9fafc;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    h1, h2, h3 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo-icon {
+      font-size: 24px;
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      font-weight: 500;
+    }
+    
+    .tab.active {
+      border-bottom: 3px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-container {
+      margin-bottom: 20px;
+    }
+    
+    input[type="text"], input[type="search"], textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    textarea {
+      min-height: 100px;
+      font-family: inherit;
+    }
+    
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: var(--accent-color);
+    }
+    
+    button.secondary {
+      background-color: white;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+    
+    button.secondary:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    button.danger {
+      background-color: var(--danger-color);
+    }
+    
+    button.danger:hover {
+      background-color: #d32f2f;
+    }
+    
+    .conversation-list, .knowledge-list {
+      margin-top: 15px;
+    }
+    
+    .conversation-item, .knowledge-item {
+      padding: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background-color: white;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    
+    .conversation-item:hover, .knowledge-item:hover {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .conversation-meta, .knowledge-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    
+    .message-list {
+      margin-top: 20px;
+    }
+    
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      max-width: 80%;
+    }
+    
+    .message.user {
+      background-color: var(--secondary-color);
+      margin-left: auto;
+    }
+    
+    .message.assistant {
+      background-color: white;
+      border: 1px solid var(--border-color);
+    }
+    
+    .message-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    .message-content {
+      white-space: pre-wrap;
+    }
+    
+    .message-time {
+      font-size: 12px;
+      color: #666;
+      text-align: right;
+      margin-top: 5px;
+    }
+    
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px;
+      background-color: var(--success-color);
+      color: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .page-btn {
+      padding: 5px 10px;
+      margin: 0 5px;
+      border: 1px solid var(--border-color);
+      background-color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .page-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <h1>Cursor AI Memory</h1>
+      </div>
+    </header>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="conversations">Konversationer</div>
+      <div class="tab" data-tab="knowledge">Kunskap</div>
+      <div class="tab" data-tab="search">Sök</div>
+      <div class="tab" data-tab="settings">Inställningar</div>
+    </div>
+    
+    <!-- Konversationsfliken -->
+    <div class="tab-content active" id="conversations">
+      <div class="card">
+        <div class="card-header">
+          <h2>Konversationer</h2>
+          <button id="refresh-conversations">Uppdatera</button>
+        </div>
+        
+        <div class="search-container">
+          <input type="search" id="conversation-search" placeholder="Sök konversationer...">
+        </div>
+        
+        <div class="conversation-list" id="conversation-list">
+          <!-- Konversationer laddas dynamiskt här -->
+        </div>
+        
+        <div class="pagination" id="conversation-pagination">
+          <!-- Paginering läggs till dynamiskt -->
+        </div>
+      </div>
+      
+      <div class="card" id="conversation-details" style="display: none;">
+        <div class="card-header">
+          <h3 id="conversation-title">Konversation</h3>
+          <button class="danger" id="delete-conversation">Radera</button>
+        </div>
+        
+        <div class="conversation-meta" id="conversation-meta">
+          <!-- Metadata visas här -->
+        </div>
+        
+        <div class="message-list" id="message-list">
+          <!-- Meddelanden laddas dynamiskt här -->
+        </div>
+        
+        <div class="actions">
+          <button class="secondary" id="back-to-list">Tillbaka</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Kunskapsfliken -->
+    <div class="tab-content" id="knowledge">
+      <div class="card">
+        <div class="card-header">
+          <h2>Kunskapsbas</h2>
+          <button id="refresh-knowledge">Uppdatera</button>
+        </div>
+        
+        <div class="search-container">
+          <input type="search" id="knowledge-search" placeholder="Sök i kunskapsbasen...">
+        </div>
+        
+        <div class="knowledge-list" id="knowledge-list">
+          <!-- Kunskapsobjekt laddas dynamiskt här -->
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3>Lägg till ny kunskap</h3>
+        </div>
+        
+        <div class="form-group">
+          <label for="knowledge-key">Nyckel:</label>
+          <input type="text" id="knowledge-key" placeholder="T.ex. 'javascript-array-methods'">
+        </div>
+        
+        <div class="form-group">
+          <label for="knowledge-data">Innehåll:</label>
+          <textarea id="knowledge-data" placeholder="Ange kunskapsinnehåll här..."></textarea>
+        </div>
+        
+        <div class="actions">
+          <button id="save-knowledge">Spara</button>
+        </div>
+      </div>
+      
+      <div class="card" id="knowledge-details" style="display: none;">
+        <div class="card-header">
+          <h3 id="knowledge-detail-title">Kunskapsdetalj</h3>
+          <button class="danger" id="delete-knowledge">Radera</button>
+        </div>
+        
+        <div class="knowledge-meta" id="knowledge-meta">
+          <!-- Metadata visas här -->
+        </div>
+        
+        <div class="form-group">
+          <label for="knowledge-detail-data">Innehåll:</label>
+          <textarea id="knowledge-detail-data" readonly></textarea>
+        </div>
+        
+        <div class="actions">
+          <button class="secondary" id="back-to-knowledge-list">Tillbaka</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sökfliken -->
+    <div class="tab-content" id="search">
+      <div class="card">
+        <div class="card-header">
+          <h2>Sökning</h2>
+        </div>
+        
+        <div class="form-group">
+          <label for="search-query">Sökfråga:</label>
+          <input type="text" id="search-query" placeholder="Ange din sökfråga...">
+        </div>
+        
+        <div class="actions">
+          <button id="perform-search">Sök</button>
+        </div>
+        
+        <div id="search-results" style="margin-top: 20px;">
+          <!-- Sökresultat laddas dynamiskt här -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Inställningsfliken -->
+    <div class="tab-content" id="settings">
+      <div class="card">
+        <div class="card-header">
+          <h2>Inställningar</h2>
+        </div>
+        
+        <div class="form-group">
+          <label for="api-url">API URL:</label>
+          <input type="text" id="api-url" value="http://localhost:3000">
+        </div>
+        
+        <div class="form-group">
+          <label for="proxy-url">Proxy URL:</label>
+          <input type="text" id="proxy-url" value="http://localhost:3100">
+        </div>
+        
+        <div class="actions">
+          <button id="save-settings">Spara inställningar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="notification" id="notification"></div>
+  
+  <script>
+    // API-basurl
+    let apiBaseUrl = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
+    let proxyBaseUrl = localStorage.getItem('proxyBaseUrl') || 'http://localhost:3100';
+    
+    // Ladda inställningar
+    document.getElementById('api-url').value = apiBaseUrl;
+    document.getElementById('proxy-url').value = proxyBaseUrl;
+    
+    // Aktiv flik-hantering
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const tabId = tab.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Hjälpfunktioner
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
+    
+    function showNotification(message, isError = false) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.backgroundColor = isError ? '#f44336' : '#4caf50';
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Konversationshantering
+    let currentPage = 1;
+    const pageSize = 10;
+    let selectedConversationId = null;
+    
+    async function loadConversations() {
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/memory/conversations?page=${currentPage}&limit=${pageSize}`);
+        const data = await response.json();
+        
+        const conversationList = document.getElementById('conversation-list');
+        conversationList.innerHTML = '';
+        
+        if (data.conversations.length === 0) {
+          conversationList.innerHTML = '<p>Inga konversationer hittades.</p>';
+          return;
+        }
+        
+        data.conversations.forEach(conv => {
+          const item = document.createElement('div');
+          item.className = 'conversation-item';
+          item.setAttribute('data-id', conv.id);
+          
+          const aiType = conv.metadata?.aiType || 'okänd';
+          
+          item.innerHTML = `
+            <div><strong>${conv.id}</strong></div>
+            <div class="conversation-meta">
+              <span>AI-typ: ${aiType}</span>
+              <span>${conv.messageCount} meddelanden</span>
+              <span>Senast uppdaterad: ${formatDate(conv.lastUpdated)}</span>
+            </div>
+          `;
+          
+          item.addEventListener('click', () => {
+            selectedConversationId = conv.id;
+            loadConversationDetails(conv.id);
+          });
+          
+          conversationList.appendChild(item);
+        });
+        
+        // Skapa paginering
+        const totalPages = Math.ceil(data.total / pageSize);
+        renderPagination(totalPages);
+      } catch (error) {
+        console.error('Fel vid laddning av konversationer:', error);
+        showNotification('Kunde inte ladda konversationer.', true);
+      }
+    }
+    
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('conversation-pagination');
+      pagination.innerHTML = '';
+      
+      if (totalPages <= 1) return;
+      
+      for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement('div');
+        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        
+        pageBtn.addEventListener('click', () => {
+          currentPage = i;
+          loadConversations();
+        });
+        
+        pagination.appendChild(pageBtn);
+      }
+    }
+    
+    async function loadConversationDetails(id) {
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/memory/conversation/${id}`);
+        const conversation = await response.json();
+        
+        document.getElementById('conversation-title').textContent = `Konversation: ${id}`;
+        
+        const metaElement = document.getElementById('conversation-meta');
+        metaElement.innerHTML = `
+          <span>AI-typ: ${conversation.metadata?.aiType || 'okänd'}</span>
+          <span>Startad: ${formatDate(conversation.metadata?.startTime || conversation.lastUpdated)}</span>
+          <span>Meddelanden: ${conversation.messages.length}</span>
+        `;
+        
+        const messageList = document.getElementById('message-list');
+        messageList.innerHTML = '';
+        
+        conversation.messages.forEach(msg => {
+          const message = document.createElement('div');
+          message.className = `message ${msg.role}`;
+          
+          message.innerHTML = `
+            <div class="message-header">${msg.role === 'user' ? 'Du' : 'AI'}</div>
+            <div class="message-content">${msg.content}</div>
+            <div class="message-time">${formatDate(msg.timestamp)}</div>
+          `;
+          
+          messageList.appendChild(message);
+        });
+        
+        document.getElementById('conversation-details').style.display = 'block';
+        document.querySelector('.card:first-child').style.display = 'none';
+      } catch (error) {
+        console.error('Fel vid laddning av konversationsdetaljer:', error);
+        showNotification('Kunde inte ladda konversationsdetaljer.', true);
+      }
+    }
+    
+    document.getElementById('back-to-list').addEventListener('click', () => {
+      document.getElementById('conversation-details').style.display = 'none';
+      document.querySelector('.card:first-child').style.display = 'block';
+    });
+    
+    document.getElementById('delete-conversation').addEventListener('click', async () => {
+      if (!selectedConversationId) return;
+      
+      if (!confirm('Är du säker på att du vill ta bort denna konversation?')) return;
+      
+      try {
+        await fetch(`${apiBaseUrl}/api/memory/conversation/${selectedConversationId}`, {
+          method: 'DELETE'
+        });
+        
+        showNotification('Konversation borttagen!');
+        document.getElementById('conversation-details').style.display = 'none';
+        document.querySelector('.card:first-child').style.display = 'block';
+        loadConversations();
+      } catch (error) {
+        console.error('Fel vid radering av konversation:', error);
+        showNotification('Kunde inte radera konversation.', true);
+      }
+    });
+    
+    document.getElementById('refresh-conversations').addEventListener('click', loadConversations);
+    
+    document.getElementById('conversation-search').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      
+      document.querySelectorAll('.conversation-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+      });
+    });
+    
+    // Kunskapshantering
+    async function loadKnowledge() {
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/memory/knowledge`);
+        const knowledgeItems = await response.json();
+        
+        const knowledgeList = document.getElementById('knowledge-list');
+        knowledgeList.innerHTML = '';
+        
+        if (knowledgeItems.length === 0) {
+          knowledgeList.innerHTML = '<p>Ingen kunskap hittades.</p>';
+          return;
+        }
+        
+        knowledgeItems.forEach(item => {
+          const knowledgeItem = document.createElement('div');
+          knowledgeItem.className = 'knowledge-item';
+          knowledgeItem.setAttribute('data-key', item.key);
+          
+          knowledgeItem.innerHTML = `
+            <div><strong>${item.key}</strong></div>
+            <div class="knowledge-meta">
+              <span>Förhandsvisning: ${item.preview}...</span>
+              <span>Senast uppdaterad: ${formatDate(item.lastUpdated)}</span>
+            </div>
+          `;
+          
+          knowledgeItem.addEventListener('click', () => {
+            loadKnowledgeDetails(item.key);
+          });
+          
+          knowledgeList.appendChild(knowledgeItem);
+        });
+      } catch (error) {
+        console.error('Fel vid laddning av kunskap:', error);
+        showNotification('Kunde inte ladda kunskapsdata.', true);
+      }
+    }
+    
+    async function loadKnowledgeDetails(key) {
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/memory/knowledge/${key}`);
+        const knowledge = await response.json();
+        
+        document.getElementById('knowledge-detail-title').textContent = `Kunskap: ${key}`;
+        
+        const metaElement = document.getElementById('knowledge-meta');
+        metaElement.innerHTML = `
+          <span>Källa: ${knowledge.metadata?.source || 'okänd'}</span>
+          <span>Senast uppdaterad: ${formatDate(knowledge.lastUpdated)}</span>
+        `;
+        
+        document.getElementById('knowledge-detail-data').value = 
+          typeof knowledge.data === 'string' 
+            ? knowledge.data
+            : JSON.stringify(knowledge.data, null, 2);
+        
+        document.getElementById('knowledge-details').style.display = 'block';
+        document.querySelectorAll('#knowledge .card:not(#knowledge-details)').forEach(card => {
+          card.style.display = 'none';
+        });
+      } catch (error) {
+        console.error('Fel vid laddning av kunskapsdetaljer:', error);
+        showNotification('Kunde inte ladda kunskapsdetaljer.', true);
+      }
+    }
+    
+    document.getElementById('back-to-knowledge-list').addEventListener('click', () => {
+      document.getElementById('knowledge-details').style.display = 'none';
+      document.querySelectorAll('#knowledge .card:not(#knowledge-details)').forEach(card => {
+        card.style.display = 'block';
+      });
+    });
+    
+    document.getElementById('save-knowledge').addEventListener('click', async () => {
+      const key = document.getElementById('knowledge-key').value.trim();
+      const data = document.getElementById('knowledge-data').value.trim();
+      
+      if (!key || !data) {
+        showNotification('Både nyckel och innehåll krävs.', true);
+        return;
+      }
+      
+      try {
+        await fetch(`${apiBaseUrl}/api/memory/knowledge`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            key,
+            data,
+            metadata: {
+              source: 'manual-entry',
+              timestamp: new Date().toISOString()
+            }
+          })
+        });
+        
+        showNotification('Kunskap sparad!');
+        document.getElementById('knowledge-key').value = '';
+        document.getElementById('knowledge-data').value = '';
+        loadKnowledge();
+      } catch (error) {
+        console.error('Fel vid sparande av kunskap:', error);
+        showNotification('Kunde inte spara kunskap.', true);
+      }
+    });
+    
+    document.getElementById('delete-knowledge').addEventListener('click', async () => {
+      const key = document.getElementById('knowledge-detail-title').textContent.replace('Kunskap: ', '');
+      
+      if (!confirm('Är du säker på att du vill ta bort denna kunskap?')) return;
+      
+      try {
+        await fetch(`${apiBaseUrl}/api/memory/knowledge/${key}`, {
+          method: 'DELETE'
+        });
+        
+        showNotification('Kunskap borttagen!');
+        document.getElementById('knowledge-details').style.display = 'none';
+        document.querySelectorAll('#knowledge .card:not(#knowledge-details)').forEach(card => {
+          card.style.display = 'block';
+        });
+        loadKnowledge();
+      } catch (error) {
+        console.error('Fel vid radering av kunskap:', error);
+        showNotification('Kunde inte radera kunskap.', true);
+      }
+    });
+    
+    document.getElementById('refresh-knowledge').addEventListener('click', loadKnowledge);
+    
+    document.getElementById('knowledge-search').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      
+      document.querySelectorAll('.knowledge-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+      });
+    });
+    
+    // Sökfunktion
+    document.getElementById('perform-search').addEventListener('click', async () => {
+      const query = document.getElementById('search-query').value.trim();
+      
+      if (!query) {
+        showNotification('Ange en sökfråga.', true);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/memory/search?query=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        const resultsElement = document.getElementById('search-results');
+        resultsElement.innerHTML = '<h3>Sökresultat</h3>';
+        
+        if (data.results.length === 0) {
+          resultsElement.innerHTML += '<p>Inga resultat hittades.</p>';
+          return;
+        }
+        
+        data.results.forEach(result => {
+          const resultItem = document.createElement('div');
+          resultItem.className = 'knowledge-item';
+          
+          resultItem.innerHTML = `
+            <div><strong>${result.type === 'conversation' ? 'Konversation' : 'Kunskap'}: ${result.id || result.key}</strong></div>
+            <div class="knowledge-meta">
+              <span>Förhandsvisning: ${result.preview}</span>
+              <span>Senast uppdaterad: ${formatDate(result.lastUpdated)}</span>
+            </div>
+          `;
+          
+          resultItem.addEventListener('click', () => {
+            if (result.type === 'conversation') {
+              document.querySelector('.tab[data-tab="conversations"]').click();
+              setTimeout(() => loadConversationDetails(result.id), 100);
+            } else {
+              document.querySelector('.tab[data-tab="knowledge"]').click();
+              setTimeout(() => loadKnowledgeDetails(result.key), 100);
+            }
+          });
+          
+          resultsElement.appendChild(resultItem);
+        });
+      } catch (error) {
+        console.error('Fel vid sökning:', error);
+        showNotification('Kunde inte utföra sökningen.', true);
+      }
+    });
+    
+    // Inställningshantering
+    document.getElementById('save-settings').addEventListener('click', () => {
+      const newApiUrl = document.getElementById('api-url').value.trim();
+      const newProxyUrl = document.getElementById('proxy-url').value.trim();
+      
+      localStorage.setItem('apiBaseUrl', newApiUrl);
+      localStorage.setItem('proxyBaseUrl', newProxyUrl);
+      
+      apiBaseUrl = newApiUrl;
+      proxyBaseUrl = newProxyUrl;
+      
+      showNotification('Inställningar sparade!');
+    });
+    
+    // Ladda data direkt
+    loadConversations();
+    loadKnowledge();
+  </script>
+</body>
+</html> 

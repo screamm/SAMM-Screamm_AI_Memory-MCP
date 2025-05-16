@@ -1,0 +1,35 @@
+{
+  "name": "cursor-ai-memory",
+  "version": "1.0.0",
+  "description": "Lokal minneslösning för att förbättra AI-minne i Cursor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:proxy": "node cursor-integration.js",
+    "test": "node test-memory.js",
+    "dev": "concurrently \"npm run start\" \"npm run start:proxy\"",
+    "dashboard": "concurrently \"npm run start\" \"npm run start:proxy\" && start http://localhost:3000/dashboard"
+  },
+  "keywords": [
+    "ai",
+    "memory",
+    "cursor",
+    "claude",
+    "gemini"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "body-parser": "^1.20.2",
+    "compromise": "^14.10.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "natural": "^6.7.2",
+    "os-utils": "^0.0.14"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

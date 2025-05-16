@@ -1,0 +1,29 @@
+{
+  "claude-1747407395004": {
+    "id": "claude-1747407395004",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Vad är några bra metoder för att hantera asynkron kod i JavaScript?",
+        "timestamp": "2025-05-16T14:56:35.099Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett simulerat svar från AI baserat på din fråga: \"\"",
+        "timestamp": "2025-05-16T14:56:35.106Z"
+      },
+      {
+        "role": "user",
+        "content": "Kan du visa ett exempel på async/await i JavaScript?",
+        "timestamp": "2025-05-16T14:56:35.128Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett simulerat svar från AI baserat på din fråga: \"\"",
+        "timestamp": "2025-05-16T14:56:35.134Z"
+      }
+    ],
+    "metadata": {},
+    "lastUpdated": "2025-05-16T14:56:35.138Z"
+  }
+}
