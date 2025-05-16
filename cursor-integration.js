@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const os = require('os');
+const cors = require('cors');
 
 const app = express();
 const PORT = 3100;
@@ -20,6 +21,7 @@ const proxyStats = {
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cors()); // Lägg till CORS-stöd för alla endpoints
 
 // Status-endpoint för övervakning
 app.get('/api/status', (req, res) => {

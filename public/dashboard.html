@@ -1,21 +1,40 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="sv" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SAM - Systemövervakning</title>
   <style>
     :root {
+      /* Ljust tema (standard variabler) */
+      --bg-color: #f9fafc;
+      --card-bg-color: white;
+      --text-color: #333;
+      --border-color: #ddd;
       --primary-color: #4a6cf7;
       --secondary-color: #f2f5ff;
       --accent-color: #6d8bff;
-      --text-color: #333;
-      --light-gray: #f5f5f5;
-      --border-color: #ddd;
       --success-color: #4caf50;
       --warning-color: #ff9800;
       --danger-color: #f44336;
       --inactive-color: #9e9e9e;
+      --header-bg: white;
+      --code-bg: #1e1e1e;
+      --code-text: #f8f8f8;
+    }
+    
+    /* Mörkt tema */
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg-color: #1e1e1e;
+      --text-color: #e0e0e0;
+      --border-color: #333;
+      --primary-color: #6d8bff;
+      --secondary-color: #1a1a2e;
+      --accent-color: #8c9eff;
+      --header-bg: #1a1a1a;
+      --code-bg: #0a0a0a;
+      --code-text: #f0f0f0;
     }
     
     * {
@@ -28,8 +47,9 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       color: var(--text-color);
-      background-color: #f9fafc;
+      background-color: var(--bg-color);
       padding: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     
     .container {
@@ -44,6 +64,7 @@
       margin-bottom: 30px;
       padding-bottom: 15px;
       border-bottom: 1px solid var(--border-color);
+      background-color: var(--header-bg);
     }
     
     h1, h2, h3 {
@@ -62,6 +83,23 @@
       color: var(--primary-color);
     }
     
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    
+    .theme-toggle-icon {
+      font-size: 18px;
+    }
+    
     .servers-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -70,11 +108,12 @@
     }
     
     .card {
-      background-color: white;
+      background-color: var(--card-bg-color);
       border: 1px solid var(--border-color);
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     
     .card-header {
@@ -174,7 +213,7 @@
     }
     
     .secondary {
-      background-color: white;
+      background-color: var(--card-bg-color);
       color: var(--primary-color);
       border: 1px solid var(--primary-color);
     }
@@ -190,8 +229,8 @@
     .logs {
       height: 200px;
       overflow-y: auto;
-      background-color: #1e1e1e;
-      color: #f8f8f8;
+      background-color: var(--code-bg);
+      color: var(--code-text);
       font-family: 'Consolas', 'Courier New', monospace;
       padding: 10px;
       font-size: 14px;
@@ -247,9 +286,15 @@
         <div class="logo-icon">🧠</div>
         <h1>SAM - Systemövervakning</h1>
       </div>
-      <button class="refresh-btn" id="refresh-all">
-        <span>Uppdatera alla</span>
-      </button>
+      <div class="header-actions">
+        <div class="theme-toggle" id="theme-toggle">
+          <span class="theme-toggle-icon" id="theme-icon">🌙</span>
+          <span id="theme-text">Ljust tema</span>
+        </div>
+        <button class="refresh-btn" id="refresh-all">
+          <span>Uppdatera alla</span>
+        </button>
+      </div>
     </header>
     
     <div class="servers-grid">
@@ -371,6 +416,42 @@
   <div class="notification" id="notification"></div>
   
   <script>
+    // Temafunktionalitet
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+    const htmlElement = document.documentElement;
+    
+    // Läs in tema från localStorage eller använd mörkt tema som standard
+    function initTheme() {
+      const savedTheme = localStorage.getItem('sam-theme') || 'dark';
+      setTheme(savedTheme);
+    }
+    
+    function setTheme(theme) {
+      htmlElement.setAttribute('data-theme', theme);
+      localStorage.setItem('sam-theme', theme);
+      
+      if (theme === 'dark') {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Ljust tema';
+      } else {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Mörkt tema';
+      }
+      
+      addLogEntry(`Tema ändrat till ${theme === 'dark' ? 'mörkt' : 'ljust'}`);
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+    
+    // Initialisera tema
+    initTheme();
+    
     // Basurls
     const memoryServerUrl = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
     const proxyServerUrl = localStorage.getItem('proxyBaseUrl') || 'http://localhost:3100';
@@ -465,26 +546,106 @@
     // Kontrollera integrationsproxyn
     async function checkProxyServer() {
       try {
-        const response = await fetch(`${proxyServerUrl}/api/status`);
-        const data = await response.json();
+        // Lägg till en timeout och bättre felhantering
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 sekunder timeout
         
-        updateServerStatus('proxy', true);
-        
-        // Uppdatera information
-        document.getElementById('proxy-server-requests').textContent = data.stats.totalRequests || 0;
-        document.getElementById('proxy-server-connected-to').textContent = 
-          `${data.connections.memoryServer.status === 'connected' ? 'Ansluten till' : 'Frånkopplad från'} ${data.connections.memoryServer.url}`;
-        document.getElementById('proxy-server-uptime').textContent = formatUptime(data.uptime);
-        
-        // Lägg till mer detaljer till loggen
-        addLogEntry(`Proxy uppdaterad. ${data.stats.claudeRequests} Claude-anrop, ${data.stats.geminiRequests} Gemini-anrop.`);
-        
-        if (data.stats.lastError) {
-          addLogEntry(`Senaste fel på proxy: ${data.stats.lastError.message} (${formatDateTime(data.stats.lastError.time)})`, 'warning');
+        try {
+          // Försök först med standard API-anrop
+          const response = await fetch(`${proxyServerUrl}/api/status`, {
+            signal: controller.signal,
+            mode: 'cors',
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (response.ok) {
+            const data = await response.json();
+            
+            updateServerStatus('proxy', true);
+            
+            // Uppdatera information
+            document.getElementById('proxy-server-requests').textContent = data.stats.totalRequests || 0;
+            document.getElementById('proxy-server-connected-to').textContent = 
+              `${data.connections.memoryServer.status === 'connected' ? 'Ansluten till' : 'Frånkopplad från'} ${data.connections.memoryServer.url}`;
+            document.getElementById('proxy-server-uptime').textContent = formatUptime(data.uptime);
+            
+            // Lägg till mer detaljer till loggen
+            addLogEntry(`Proxy uppdaterad. ${data.stats.claudeRequests} Claude-anrop, ${data.stats.geminiRequests} Gemini-anrop.`);
+            
+            if (data.stats.lastError) {
+              addLogEntry(`Senaste fel på proxy: ${data.stats.lastError.message} (${formatDateTime(data.stats.lastError.time)})`, 'warning');
+            }
+          } else {
+            throw new Error(`Server svarade med status: ${response.status}`);
+          }
+        } catch (apiError) {
+          // Om API-anropet misslyckas, försök med en enkel tillgänglighetskontroll istället
+          clearTimeout(timeoutId);
+          
+          // Skapa ett <img> element och försök ladda en bild från servern
+          // Detta kringgår CORS-begränsningar
+          const img = new Image();
+          const checkUrl = `${proxyServerUrl}/favicon.ico`;
+          
+          const imgPromise = new Promise((resolve, reject) => {
+            img.onload = () => resolve(true);
+            img.onerror = () => {
+              // Även om vi får 404 betyder det att servern är uppe
+              // Men om nätverksfelet är något annat (t.ex. timeout), är servern förmodligen nere
+              const networkError = event && event.type === 'error';
+              resolve(!networkError);
+            };
+            // Lägg till en slumpmässig parameter för att undvika cache
+            img.src = `${checkUrl}?noCache=${Date.now()}`;
+          });
+          
+          // Sätt en timeout för bildinladdningsförsöket
+          const timeoutPromise = new Promise((resolve) => {
+            setTimeout(() => resolve(false), 2000);
+          });
+          
+          // Vänta på antingen bildinladdning eller timeout
+          const isReachable = await Promise.race([imgPromise, timeoutPromise]);
+          
+          if (isReachable) {
+            // Server svarar men API kanske inte fungerar
+            updateServerStatus('proxy', true);
+            document.getElementById('proxy-server-requests').textContent = "N/A (API ej tillgänglig)";
+            document.getElementById('proxy-server-connected-to').textContent = "Status okänd";
+            document.getElementById('proxy-server-uptime').textContent = "N/A";
+            addLogEntry(`Proxy är uppe men API:et svarar inte: ${apiError.message}`, 'warning');
+          } else {
+            throw new Error("Kunde inte nå servern");
+          }
         }
       } catch (error) {
         console.error('Fel vid kontroll av proxy:', error);
         updateServerStatus('proxy', false, error.message);
+        
+        // Försök en sista gång med en ren XHR-förfrågan för att undvika CORS
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.timeout = 2000; // 2 sekunder timeout
+          
+          // Använd HEAD-metoden för minimal overhead
+          xhr.open('HEAD', proxyServerUrl, true);
+          
+          xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              updateServerStatus('proxy', true);
+              document.getElementById('proxy-server-requests').textContent = "N/A (endast HEAD-kontroll)";
+              addLogEntry("Proxy är tillgänglig men API är inte tillgängligt", 'warning');
+            }
+          };
+          
+          xhr.send();
+        } catch (xhrError) {
+          // Ignorera fel - vi har redan uppdaterat statusen som offline
+        }
       }
     }
     
@@ -559,6 +720,7 @@
     
     // Initiera sidan
     window.addEventListener('load', () => {
+      addLogEntry('Dashboard laddad med tema: ' + (localStorage.getItem('sam-theme') || 'dark'));
       checkMemoryServer();
       checkProxyServer();
       
