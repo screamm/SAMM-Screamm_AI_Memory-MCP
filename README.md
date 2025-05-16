@@ -184,6 +184,57 @@ const response = await memory.fullMemoryAugmentedInteraction(
 | POST | `/proxy/claude` | Call Claude AI with memory enhancement |
 | POST | `/proxy/gemini` | Call Gemini AI with memory enhancement |
 
+## 🔌 MCP Integration with Cursor IDE
+
+### What is MCP?
+
+Model Context Protocol (MCP) is a standard protocol used by Cursor and other AI tools to enrich prompts with external context. This system implements MCP for seamless memory integration.
+
+### Starting All Services
+
+To start all services (memory server, integration proxy, and MCP server):
+
+```bash
+npm run dev:all
+```
+
+### Configuring Cursor for MCP Integration
+
+Add this configuration to Cursor's settings for MCP integration. This JSON can be added to your Cursor configuration file:
+
+```json
+{
+  "mcpServers": {
+    "sam-memory": {
+      "command": "node",
+      "args": [
+        "PATH/TO/YOUR/PROJECT/mcp-server.js"
+      ],
+      "url": "http://localhost:3200/mcp"
+    }
+  }
+}
+```
+
+Replace `PATH/TO/YOUR/PROJECT` with the actual path to your project.
+
+### Cursor Configuration File Locations
+
+- **Windows**: `%APPDATA%\Cursor\Config\cursor_config.json`
+- **macOS**: `~/Library/Application Support/Cursor/Config/cursor_config.json`
+- **Linux**: `~/.config/Cursor/Config/cursor_config.json`
+
+### Troubleshooting MCP Connection
+
+If you experience issues with the MCP connection:
+
+1. Ensure all servers are running with `npm run dev:all`
+2. Check the MCP server is working by visiting `http://localhost:3200/mcp/healthcheck`
+3. Verify your cursor_config.json has the correct path to mcp-server.js
+4. Restart Cursor IDE to apply configuration changes
+
+For more details on MCP integration, see the MCP-README.md file in the project.
+
 ## 🔒 Security
 
 This project is intended for **local use**. The memory server stores all conversation and knowledge data locally on your machine.
@@ -223,9 +274,9 @@ If you find this project helpful, consider buying the developer a coffee:
 
 ## 📬 Contact
 
-David - [Your Email](mailto:your-email@example.com)
+David - [Your Email](mailto:contact@davidlindestrandcuenca.se)
 
-Project Link: [https://github.com/your-username/cursor-ai-memory](https://github.com/your-username/cursor-ai-memory)
+Project Link: [https://github.com/screamm/cursor-ai-memory](https://github.com/screamm/cursor-ai-memory)
 
 ---
 

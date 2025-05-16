@@ -458,6 +458,92 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Ett serverfel uppstod' });
 });
 
+// Administration-endpoint för att starta/stoppa servrar
+let serverProcesses = {
+  mcp: null
+};
+
+app.post('/api/admin/start-servers', (req, res) => {
+  serverStats.apiRequests++;
+  
+  try {
+    const { mcpTools, mcpPort, memoryServerUrl, startMemoryServer } = req.body;
+    
+    // Kontrollera att alla nödvändiga parametrar finns
+    if (!mcpTools || !mcpPort || !memoryServerUrl) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Alla parametrar måste anges' 
+      });
+    }
+    
+    const { spawn } = require('child_process');
+    
+    // Starta MCP-servern om den inte redan körs
+    if (serverProcesses.mcp) {
+      // Avsluta befintlig process först om den finns
+      serverProcesses.mcp.kill();
+      serverProcesses.mcp = null;
+    }
+    
+    // Konfigurera miljövariabler
+    const env = {
+      ...process.env,
+      MCP_PORT: mcpPort,
+      MCP_MEMORY_SERVER: memoryServerUrl,
+      MCP_TOOLS: mcpTools
+    };
+    
+    // Starta MCP-servern
+    const mcpProcess = spawn('node', [path.join(__dirname, 'mcp-server.js')], {
+      env,
+      detached: true, // Kör i bakgrunden
+      stdio: 'ignore' // Ignorera stdout/stderr för att förhindra blockering
+    });
+    
+    // Spara referens till processen
+    serverProcesses.mcp = mcpProcess;
+    
+    // Logga start
+    console.log(`MCP-server startad på port ${mcpPort} med verktyg: ${mcpTools}`);
+    
+    res.json({ 
+      success: true,
+      message: `MCP-server startad på port ${mcpPort} med verktyg: ${mcpTools}`
+    });
+  } catch (error) {
+    console.error('Fel vid start av servrar:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
+app.post('/api/admin/stop-servers', (req, res) => {
+  serverStats.apiRequests++;
+  
+  try {
+    // Stoppa MCP-servern om den körs
+    if (serverProcesses.mcp) {
+      serverProcesses.mcp.kill();
+      serverProcesses.mcp = null;
+      console.log('MCP-server stoppad');
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'Servrar stoppade'
+    });
+  } catch (error) {
+    console.error('Fel vid stopp av servrar:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
 // Starta servern
 app.listen(PORT, () => {
   console.log(`Memory Control Process server körs på port ${PORT}`);
