@@ -24,6 +24,76 @@
   <img src="https://via.placeholder.com/800x400?text=Cursor+AI+Memory+Screenshot" alt="Cursor AI Memory Screenshot" width="800"/>
 </p>
 
+## 🔗 Snabbstart: Ansluta till Cursor via MCP
+
+För att direkt koppla upp Cursor IDE mot minnesservern, lägg till följande konfiguration i din Cursor-konfigurationsfil:
+
+### Exempel för olika operativsystem:
+
+#### Windows:
+I Windows måste backslash-tecken (`\`) escapas med ytterligare en backslash i JSON, eller så kan du använda framåtlutande snedstreck (`/`) som också fungerar.
+
+**Alternativ 1:** Använd escaped backslash (dubbla backslash)
+```json
+{
+  "mcpServers": {
+    "sam-memory": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\användarnamn\\sökväg\\till\\SAM-Screamm_AI_Memory\\mcp-server.js"
+      ],
+      "url": "http://localhost:3200/mcp"
+    }
+  }
+}
+```
+
+**Alternativ 2:** Använd framåtlutande snedstreck (enklare)
+```json
+{
+  "mcpServers": {
+    "sam-memory": {
+      "command": "node",
+      "args": [
+        "C:/Users/användarnamn/sökväg/till/SAM-Screamm_AI_Memory/mcp-server.js"
+      ],
+      "url": "http://localhost:3200/mcp"
+    }
+  }
+}
+```
+
+#### macOS/Linux:
+```json
+{
+  "mcpServers": {
+    "sam-memory": {
+      "command": "node",
+      "args": [
+        "/Users/användarnamn/sökväg/till/SAM-Screamm_AI_Memory/mcp-server.js"
+      ],
+      "url": "http://localhost:3200/mcp"
+    }
+  }
+}
+```
+
+**Ersätt sökvägen ovan** med den faktiska sökvägen till `mcp-server.js` på ditt system.
+
+### Plats för Cursor-konfigurationsfilen:
+
+- **Windows**: `%APPDATA%\Cursor\Config\cursor_config.json`
+- **macOS**: `~/Library/Application Support/Cursor/Config/cursor_config.json`
+- **Linux**: `~/.config/Cursor/Config/cursor_config.json`
+
+### Starta servern:
+
+```bash
+npm run dev:all
+```
+
+När konfigurationen är klar, kommer Cursor automatiskt att använda din lokala minnesserver för alla AI-interaktioner.
+
 ### 🌟 Key Features
 
 - **Seamless memory integration** for Claude and Gemini in Cursor
@@ -200,29 +270,7 @@ npm run dev:all
 
 ### Configuring Cursor for MCP Integration
 
-Add this configuration to Cursor's settings for MCP integration. This JSON can be added to your Cursor configuration file:
-
-```json
-{
-  "mcpServers": {
-    "sam-memory": {
-      "command": "node",
-      "args": [
-        "PATH/TO/YOUR/PROJECT/mcp-server.js"
-      ],
-      "url": "http://localhost:3200/mcp"
-    }
-  }
-}
-```
-
-Replace `PATH/TO/YOUR/PROJECT` with the actual path to your project.
-
-### Cursor Configuration File Locations
-
-- **Windows**: `%APPDATA%\Cursor\Config\cursor_config.json`
-- **macOS**: `~/Library/Application Support/Cursor/Config/cursor_config.json`
-- **Linux**: `~/.config/Cursor/Config/cursor_config.json`
+Se den detaljerade instruktionen under [Snabbstart: Ansluta till Cursor via MCP](#-snabbstart-ansluta-till-cursor-via-mcp) i början av dokumentet.
 
 ### Troubleshooting MCP Connection
 
