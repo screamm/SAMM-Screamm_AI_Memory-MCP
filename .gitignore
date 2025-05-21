@@ -28,3 +28,9 @@ Thumbs.db
 *.swo
 .tmp
 .temp 
+
+# Cursor
+.cursor/
+.cursor/*
+.cursor/mcp.json
+
