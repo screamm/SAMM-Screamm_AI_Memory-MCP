@@ -25,5 +25,62 @@
     ],
     "metadata": {},
     "lastUpdated": "2025-05-16T14:56:35.138Z"
+  },
+  "test-convo-1": {
+    "id": "test-convo-1",
+    "messages": [
+      {
+        "content": "Hej, detta �r ett test",
+        "role": "user"
+      },
+      {
+        "content": "Hej! Jag �r din AI-assistent.",
+        "role": "assistant"
+      }
+    ],
+    "metadata": {
+      "source": "ps-test"
+    },
+    "lastUpdated": "2025-05-17T23:36:56.502Z"
+  },
+  "test-convo-2": {
+    "id": "test-convo-2",
+    "messages": [
+      {
+        "content": "Hej, detta �r ett nytt test",
+        "role": "user"
+      },
+      {
+        "content": "Hej! Detta �r ett testsvar.",
+        "role": "assistant"
+      }
+    ],
+    "metadata": {
+      "source": "test-2"
+    },
+    "lastUpdated": "2025-05-17T23:46:13.500Z"
+  },
+  "sam-memoryNY": {
+    "id": "sam-memoryNY",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Spara denna chatten i MCP-servern (\"sam-memoryNY\") för att ha kontext.\n\nTESTAR ATT SKRIVA något för att se om det sparas på vår minnesserver"
+      },
+      {
+        "role": "assistant",
+        "content": "Jag har sparat din testmeddelande i minnesservern. Det kommer nu att finnas tillgängligt för framtida konversationer som kontext."
+      }
+    ],
+    "metadata": {
+      "title": "Test av minnesserver",
+      "tags": [
+        "test",
+        "minne",
+        "context"
+      ],
+      "projektPath": "/c%3A/Users/david/Documents/FSU23D/Egna%20Projekt/SAM-Screamm_AI_Memory"
+    },
+    "lastUpdated": "2025-05-21T08:38:38.685Z"
   }
 }

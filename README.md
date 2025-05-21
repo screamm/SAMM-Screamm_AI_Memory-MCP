@@ -1,333 +1,92 @@
-# 🧠 Cursor AI Memory
+# SAM - Screamm AI Memory
 
-<div align="center">
-  
-  ![Version](https://img.shields.io/badge/version-1.0.0-blue)
-  ![License](https://img.shields.io/badge/license-MIT-green)
-  ![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)
-  
-  **A local memory system to enhance AI interactions in Cursor**
-  
-  [Installation](#-installation) • 
-  [Features](#-features) • 
-  [Usage](#-usage) • 
-  [API Reference](#-api-reference) • 
-  [Contributions](#-contributions)
-  
-</div>
+Ett minnesystem för Cursor IDE som sparar AI-chattarna till en minnesserver och använder dem för att tillhandahålla bättre kontext via Model Context Protocol (MCP).
 
-## ✨ Overview
+## Funktioner
 
-**Cursor AI Memory** (SAM) is a powerful local memory solution that significantly enhances AI interactions in the Cursor IDE. By saving conversation history and contextual knowledge locally, the system provides AI with longer and more consistent memory over time.
+- Sparar AI-konversationer till lokal minnesserver
+- Använder tidigare konversationer för att förbättra kontexten i nya konversationer
+- Integrerar med Cursor via Model Context Protocol (MCP)
+- Tillhandahåller verktyg för att:
+  - Hämta relevanta tidigare konversationer baserat på sökfråga
+  - Spara nya konversationer
+  - Visa minnesstatistik
 
-<p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Cursor+AI+Memory+Screenshot" alt="Cursor AI Memory Screenshot" width="800"/>
-</p>
+## Installation
 
-## 🔗 Snabbstart: Ansluta till Cursor via MCP
+1. Klona detta repository
+2. Installera beroenden med npm:
 
-För att direkt koppla upp Cursor IDE mot minnesservern, lägg till följande konfiguration i din Cursor-konfigurationsfil:
-
-### Exempel för olika operativsystem:
-
-#### Windows:
-I Windows måste backslash-tecken (`\`) escapas med ytterligare en backslash i JSON, eller så kan du använda framåtlutande snedstreck (`/`) som också fungerar.
-
-**Alternativ 1:** Använd escaped backslash (dubbla backslash)
-```json
-{
-  "mcpServers": {
-    "sam-memory": {
-      "command": "node",
-      "args": [
-        "C:\\Users\\användarnamn\\sökväg\\till\\SAM-Screamm_AI_Memory\\mcp-server.js"
-      ],
-      "url": "http://localhost:3200/mcp"
-    }
-  }
-}
 ```
-
-**Alternativ 2:** Använd framåtlutande snedstreck (enklare)
-```json
-{
-  "mcpServers": {
-    "sam-memory": {
-      "command": "node",
-      "args": [
-        "C:/Users/användarnamn/sökväg/till/SAM-Screamm_AI_Memory/mcp-server.js"
-      ],
-      "url": "http://localhost:3200/mcp"
-    }
-  }
-}
-```
-
-#### macOS/Linux:
-```json
-{
-  "mcpServers": {
-    "sam-memory": {
-      "command": "node",
-      "args": [
-        "/Users/användarnamn/sökväg/till/SAM-Screamm_AI_Memory/mcp-server.js"
-      ],
-      "url": "http://localhost:3200/mcp"
-    }
-  }
-}
-```
-
-**Ersätt sökvägen ovan** med den faktiska sökvägen till `mcp-server.js` på ditt system.
-
-### Plats för Cursor-konfigurationsfilen:
-
-- **Windows**: `%APPDATA%\Cursor\Config\cursor_config.json`
-- **macOS**: `~/Library/Application Support/Cursor/Config/cursor_config.json`
-- **Linux**: `~/.config/Cursor/Config/cursor_config.json`
-
-### Starta servern:
-
-```bash
-npm run dev:all
-```
-
-När konfigurationen är klar, kommer Cursor automatiskt att använda din lokala minnesserver för alla AI-interaktioner.
-
-### 🌟 Key Features
-
-- **Seamless memory integration** for Claude and Gemini in Cursor
-- **Powerful TF-IDF search** to find relevant history
-- **Contextualized AI responses** based on your previous conversation history
-- **Knowledge base functionality** to permanently store important facts
-- **Modern web interface** to explore and manage memories
-- **Local and private** - all data remains on your computer
-
-## 🚀 Installation
-
-### Prerequisites
-
-- Node.js (v14 or later)
-- npm (v6 or later)
-- A Cursor IDE installation
-
-### Quick Installation
-
-```bash
-# Clone the repo (or download)
-git clone https://github.com/your-username/cursor-ai-memory.git
-cd cursor-ai-memory
-
-# Install dependencies
 npm install
-
-# Start both the memory server and integration proxy
-npm run dev
 ```
 
-That's it! Then visit [http://localhost:3000](http://localhost:3000) to access the web interface.
+## Användning
 
-## 🛠️ Features
-
-### 1. Memory Management
-
-The system automatically saves all conversation history and can find relevant context from previous conversations when you ask similar questions.
-
-### 2. Context Enrichment
-
-AI responses are improved by adding relevant context from previous conversations, allowing the AI to:
-- **Remember** previously discussed concepts
-- **Build upon** previous answers
-- **Consistently follow up** over longer time periods
-
-### 3. Knowledge Base
-
-Store important information permanently:
-- **Manual storage** of important knowledge
-- **Automatic extraction** of key facts from AI responses
-- **Tagging and searching** of knowledge items
-
-### 4. Dynamic Search
-
-Search through all conversation history and knowledge base to find relevant information about your current project.
-
-## 📊 System Architecture
-
-The system consists of three main components:
-
-1. **MCP Server (Memory Control Process)** - The heart of the system that handles the storage and retrieval of memories
-2. **Cursor Integration** - The integration layer that connects Cursor to the memory system
-3. **Web Interface** - Provides a visual representation of stored memories
-4. **System Monitoring** - A modern monitoring interface to check the status of both servers
+Starta hela systemet med ett enda kommando:
 
 ```
-┌───────────────┐      ┌────────────────────┐      ┌─────────────────┐
-│               │      │                    │      │                 │
-│  Cursor IDE   │<─────│ Integration Proxy  │<─────│   MCP Server    │
-│               │      │ (cursor-integration)│      │ (memory storage)│
-└───────────────┘      └────────────────────┘      └─────────────────┘
-                                                          │
-                                                          │
-                                                          v
-                                                   ┌─────────────────┐
-                                                   │                 │
-                                                   │  Web Interface  │
-                                                   │                 │
-                                                   └─────────────────┘
+node start.js
 ```
 
-## 🖥️ Usage
+Detta startar:
+1. Minnesservern (sparar konversationer)
+2. MCP-servern (kommunicerar med Cursor)
 
-### Web Interface
+För att ange en annan port för minnesservern:
 
-When the server is running, visit [http://localhost:3000](http://localhost:3000) to explore:
-
-- **Conversations Tab** - Browse through your AI chat history
-- **Knowledge Tab** - Manage your saved knowledge
-- **Search Tab** - Find specific information
-- **Settings Tab** - Configure the system
-
-### System Monitoring
-
-To monitor system health, visit [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
-
-Here you can:
-- See the status of the memory server and integration proxy
-- Monitor memory consumption and CPU usage
-- View detailed statistics on conversations and knowledge data
-- Manage the servers (restart etc.)
-
-### Integration with Cursor
-
-#### Method 1: Proxy Solution (recommended)
-
-To integrate with Cursor, use our proxy solution:
-
-1. Make sure both the memory server and proxy are running:
-   ```bash
-   npm run dev
-   ```
-
-2. Configure Cursor to use your local proxy for AI calls:
-   - For Claude: `http://localhost:3100/proxy/claude`
-   - For Gemini: `http://localhost:3100/proxy/gemini`
-
-#### Method 2: Direct API Integration
-
-Use the memory component directly in your own scripts:
-
-```javascript
-const CursorMemoryExtension = require('./cursor-memory-extension');
-const memory = new CursorMemoryExtension();
-
-// Start a new conversation
-await memory.startNewConversation('claude');
-
-// Use memory-enhanced interaction
-const response = await memory.fullMemoryAugmentedInteraction(
-  "My question",
-  (prompt) => callYourAIFunction(prompt)
-);
+```
+node start.js --port=8080
 ```
 
-## 📚 API Reference
+## Cursor-integration
 
-### Memory Server (port 3000)
+För att integrera med Cursor IDE, skapa filen `cursor-mcp-config.json` i din AppData-mapp för Cursor:
 
-| Method | Endpoint | Description |
-|-------|----------|-------------|
-| GET | `/api/memory/conversations` | Retrieve all conversations |
-| POST | `/api/memory/conversation` | Create or update a conversation |
-| GET | `/api/memory/conversation/:id` | Retrieve a specific conversation |
-| DELETE | `/api/memory/conversation/:id` | Delete a conversation |
-| GET | `/api/memory/knowledge` | Retrieve all knowledge |
-| POST | `/api/memory/knowledge` | Add or update knowledge |
-| GET | `/api/memory/knowledge/:key` | Retrieve specific knowledge |
-| DELETE | `/api/memory/knowledge/:key` | Delete knowledge |
-| GET | `/api/memory/search` | Search memories |
-| POST | `/api/memory/generate-context` | Generate context for prompt |
+Windows: `%AppData%\Cursor\cursor-mcp-config.json`
+Mac: `~/Library/Application Support/Cursor/cursor-mcp-config.json`
+Linux: `~/.config/Cursor/cursor-mcp-config.json`
 
-### Integration Proxy (port 3100)
+Med följande innehåll:
 
-| Method | Endpoint | Description |
-|-------|----------|-------------|
-| POST | `/proxy/claude` | Call Claude AI with memory enhancement |
-| POST | `/proxy/gemini` | Call Gemini AI with memory enhancement |
-
-## 🔌 MCP Integration with Cursor IDE
-
-### What is MCP?
-
-Model Context Protocol (MCP) is a standard protocol used by Cursor and other AI tools to enrich prompts with external context. This system implements MCP for seamless memory integration.
-
-### Starting All Services
-
-To start all services (memory server, integration proxy, and MCP server):
-
-```bash
-npm run dev:all
+```json
+{
+  "mcpServers": {
+    "sam-memory": {
+      "command": "node",
+      "args": ["SÖKVÄG_TILL_DIN_KATALOG/mcp-server.js"],
+      "env": {
+        "MCP_MEMORY_SERVER": "http://localhost:3000",
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
 ```
 
-### Configuring Cursor for MCP Integration
+Ersätt `SÖKVÄG_TILL_DIN_KATALOG` med den absoluta sökvägen till din installation av SAM.
 
-Se den detaljerade instruktionen under [Snabbstart: Ansluta till Cursor via MCP](#-snabbstart-ansluta-till-cursor-via-mcp) i början av dokumentet.
+## Tillgängliga MCP-verktyg
 
-### Troubleshooting MCP Connection
+När servern är ansluten till Cursor, blir följande verktyg tillgängliga:
 
-If you experience issues with the MCP connection:
+- `get-relevant-conversations` - Hämtar relevanta tidigare konversationer baserat på en sökfråga
+- `save-conversation` - Sparar en ny konversation till minnesservern
+- `get-conversation` - Hämtar en specifik konversation med ID
 
-1. Ensure all servers are running with `npm run dev:all`
-2. Check the MCP server is working by visiting `http://localhost:3200/mcp/healthcheck`
-3. Verify your cursor_config.json has the correct path to mcp-server.js
-4. Restart Cursor IDE to apply configuration changes
+## Teknisk information
 
-For more details on MCP integration, see the MCP-README.md file in the project.
+Projektet består av två huvudkomponenter:
 
-## 🔒 Security
+1. **Minnesserver** - En Express.js-server som hanterar lagring och hämtning av AI-konversationer
+2. **MCP-server** - En MCP-server som integrerar med Cursor IDE och kommunicerar med minnesservern
 
-This project is intended for **local use**. The memory server stores all conversation and knowledge data locally on your machine.
+Systemet använder STDIO-transport för MCP-protokollet för bästa möjliga integration med Cursor.
 
-⚠️ **Note:** The system has not implemented advanced authentication or encryption, so do not use in production environments without appropriate security controls.
+## Utveckling och felsökning
 
-## 🛣️ Roadmap
+För att övervaka status och loggmeddelanden, kolla mappen `logs/` som innehåller loggfiler för alla systemkomponenter.
 
-- [ ] **Vector-based semantic search** for better relevance filtering
-- [ ] **Browser extension** for seamless Cursor integration
-- [ ] **Automatic knowledge extraction** from conversations
-- [ ] **Database integration** for handling large amounts of data
-- [ ] **Advanced context handling** with historical-context models
-- [ ] **Security improvements** with encryption and authentication
-
-## 👥 Contributions
-
-Contributions are welcome! If you want to contribute:
-
-1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
-
-## 💝 Support the Developer
-
-If you find this project helpful, consider buying the developer a coffee:
-
-<a href="https://www.buymeacoffee.com/screamm" target="_blank">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50px">
-</a>
-
-## 📬 Contact
-
-David - [Your Email](mailto:contact@davidlindestrandcuenca.se)
-
-Project Link: [https://github.com/screamm/cursor-ai-memory](https://github.com/screamm/cursor-ai-memory)
-
----
-
-<div align="center">
-  <sub>Built with ❤️ for better AI interaction in Cursor</sub>
-</div> 
+Webbgränssnittet för minnesservern finns på:
+- Dashboard: http://localhost:3000/dashboard
+- API-status: http://localhost:3000/api/status 

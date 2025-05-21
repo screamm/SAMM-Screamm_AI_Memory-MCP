@@ -1,0 +1,18 @@
+{
+  "id": "sam-memoryNY",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Spara denna chatten i MCP-servern (\"sam-memoryNY\") för att ha kontext.\n\nTESTAR ATT SKRIVA något för att se om det sparas på vår minnesserver"
+    },
+    {
+      "role": "assistant",
+      "content": "Jag har sparat din testmeddelande i minnesservern. Det kommer nu att finnas tillgängligt för framtida konversationer som kontext."
+    }
+  ],
+  "metadata": {
+    "title": "Test av minnesserver",
+    "tags": ["test", "minne", "context"],
+    "projektPath": "/c%3A/Users/david/Documents/FSU23D/Egna%20Projekt/SAM-Screamm_AI_Memory"
+  }
+} 

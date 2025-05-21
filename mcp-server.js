@@ -1,205 +1,281 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
+/**
+ * SAM MCP Server
+ * 
+ * En MCP-server som integrerar med minnesservern för att ge Cursor
+ * möjlighet att använda tidigare konversationer som kontext.
+ */
+
+const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
+const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+const { z } = require('zod');
+const fs = require('fs-extra');
 const path = require('path');
-const cors = require('cors');
-const axios = require('axios');
-const CursorMemoryExtension = require('./cursor-memory-extension');
+const https = require('https');
+const http = require('http');
 
-// MCP-serverkonfiguration
-const app = express();
-const PORT = process.env.MCP_PORT || 3200;
-const memory = new CursorMemoryExtension('http://localhost:3000');
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-
-// Hjälpfunktion för loggning
-function logToFile(data, type = 'info') {
-  const logDir = path.join(__dirname, 'logs');
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true });
-  }
-  
-  const timestamp = new Date().toISOString();
-  const logEntry = `[${timestamp}] [${type.toUpperCase()}] ${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}\n`;
-  
-  fs.appendFileSync(path.join(logDir, 'mcp.log'), logEntry);
+// Konfigurera loggning
+const logDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDir)) {
+  fs.mkdirpSync(logDir);
 }
 
-// MCP huvudendpoint för att förbättra prompts med kontext
-app.post('/mcp', async (req, res) => {
+// Loggfunktion för diagnostik
+function logToFile(message) {
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] [INFO] ${message}\n`;
+  
   try {
-    logToFile(req.body, 'request');
-    
-    const { prompt, conversation_id, model, stream = false, options = {} } = req.body;
-    
-    if (!prompt) {
-      return res.status(400).json({ 
-        error: "Missing required parameter: 'prompt'" 
-      });
-    }
-    
-    // Använd befintlig konversation eller skapa en ny
-    const convoId = conversation_id || `mcp-cursor-${Date.now()}`;
-    
-    // Skapa en ny konversation om det behövs
-    if (memory.currentConversationId !== convoId) {
-      try {
-        // Försök att hitta en befintlig konversation
-        await axios.get(`http://localhost:3000/api/memory/conversation/${convoId}`);
-        memory.currentConversationId = convoId;
-        const convoResponse = await axios.get(`http://localhost:3000/api/memory/conversation/${convoId}`);
-        memory.conversationMessages = convoResponse.data.messages || [];
-      } catch (error) {
-        // Om konversationen inte finns, skapa en ny
-        await memory.startNewConversation('cursor', { 
-          conversationId: convoId,
-          aiModel: model || 'unknown',
-          source: 'mcp',
-          ...options
-        });
-      }
-    }
-    
-    // Förbättra prompten med relevant kontext från minnet
-    const enhancedPrompt = await memory.enhancePrompt(prompt);
-    
-    // Lägg till användarfrågan i minnet
-    await memory.addMessage('user', prompt);
-    
-    // Informera om hur mycket kontext som lagts till
-    const contextSize = (enhancedPrompt.length - prompt.length);
-    const percentageIncrease = prompt.length > 0 ? Math.round((contextSize / prompt.length) * 100) : 0;
-    
-    // Formatera svaret enligt MCP-protokollet
-    const response = {
-      id: `sam-mem-${Date.now()}`,
-      object: "memory_enhancement",
-      created: Math.floor(Date.now() / 1000),
-      model: "sam-cursor-memory-v1",
-      enhanced_prompt: enhancedPrompt,
-      original_prompt: prompt,
-      conversation_id: convoId,
-      system_info: {
-        memory_provider: "SAM-Screamm_AI_Memory",
-        version: "1.0.0",
-        context_used: enhancedPrompt !== prompt,
-        context_tokens_approximate: Math.round(contextSize / 4), // Grov uppskattning av tokens
-        memory_stats: {
-          context_percentage: percentageIncrease,
-          conversation_messages: memory.conversationMessages.length
-        }
-      }
+    fs.appendFileSync(path.join(logDir, 'mcp.log'), logMessage);
+    console.error(logMessage.trim());
+  } catch (err) {
+    console.error(`Kunde inte skriva till loggfil: ${err.message}`);
+  }
+}
+
+// Funktion för att göra HTTP-förfrågan till minnesservern
+async function fetchMemory(endpoint, method = 'GET', data = null) {
+  const MEMORY_SERVER = process.env.MCP_MEMORY_SERVER || 'http://localhost:3000';
+  const url = `${MEMORY_SERVER}/api/memory/${endpoint}`;
+  
+  return new Promise((resolve, reject) => {
+    const options = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     };
-    
-    logToFile(response, 'response');
-    res.json(response);
-    
-  } catch (error) {
-    console.error('MCP Server Error:', error);
-    logToFile(error.message, 'error');
-    res.status(500).json({ 
-      error: 'Ett fel uppstod i MCP-servern',
-      details: error.message 
-    });
-  }
-});
 
-// Endpoint för att ta emot och spara AI-svar
-app.post('/mcp/response', async (req, res) => {
-  try {
-    const { conversation_id, response, model } = req.body;
-    
-    if (!conversation_id || !response) {
-      return res.status(400).json({ error: 'Konversations-ID och svar krävs' });
-    }
-    
-    // Säkerställ att vi har rätt konversation
-    if (memory.currentConversationId !== conversation_id) {
-      memory.currentConversationId = conversation_id;
-      try {
-        const convoResponse = await axios.get(`http://localhost:3000/api/memory/conversation/${conversation_id}`);
-        memory.conversationMessages = convoResponse.data.messages || [];
-      } catch (e) {
-        // Om konversationen inte finns
-        memory.conversationMessages = [];
-        await memory.startNewConversation('cursor', { 
-          conversationId: conversation_id,
-          source: 'mcp-response',
-          aiModel: model || 'unknown'
-        });
-      }
-    }
-    
-    // Spara AI-svaret
-    await memory.addMessage('assistant', response);
-    
-    // Extrahera viktig kunskap
-    await memory.extractAndSaveKnowledge(response);
-    
-    res.json({ 
-      success: true, 
-      conversation_id,
-      saved_time: new Date().toISOString(),
-      message_count: memory.conversationMessages.length
+    const requestLib = url.startsWith('https') ? https : http;
+    const req = requestLib.request(url, options, (res) => {
+      let responseData = '';
+      
+      res.on('data', (chunk) => {
+        responseData += chunk;
+      });
+      
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            const jsonData = JSON.parse(responseData);
+            resolve(jsonData);
+          } catch (error) {
+            reject(new Error(`Kunde inte tolka svaret: ${error.message}`));
+          }
+        } else {
+          reject(new Error(`HTTP-fel ${res.statusCode}: ${responseData}`));
+        }
+      });
     });
     
-  } catch (error) {
-    console.error('MCP Response Error:', error);
-    logToFile(error.message, 'error');
-    res.status(500).json({ error: 'Ett fel uppstod när svaret skulle sparas' });
-  }
-});
-
-// Hälsokontrollendpoint för MCP-protokollet
-app.get('/mcp/healthcheck', (req, res) => {
-  res.json({
-    status: 'ok',
-    version: '1.0.0',
-    service: 'SAM-Screamm_AI_Memory MCP',
-    timestamp: new Date().toISOString(),
-    memory_server: 'http://localhost:3000',
-    supports_streaming: false
-  });
-});
-
-// Information om tillgängliga verktyg och funktioner
-app.get('/mcp/info', (req, res) => {
-  res.json({
-    name: 'SAM-Screamm_AI_Memory',
-    version: '1.0.0',
-    description: 'Ett lokalt minnessystem för att förbättra AI-interaktioner i Cursor',
-    supports: {
-      conversation_memory: true,
-      knowledge_base: true,
-      context_enrichment: true,
-      semantic_search: true
-    },
-    endpoints: {
-      mcp: {
-        method: 'POST',
-        description: 'Huvudendpoint för att berika prompts med kontext'
-      },
-      'mcp/response': {
-        method: 'POST',
-        description: 'Spara AI-svar i minnessystemet'
-      },
-      'mcp/healthcheck': {
-        method: 'GET',
-        description: 'Kontrollera serverstatus'
-      },
-      'mcp/info': {
-        method: 'GET',
-        description: 'Information om denna MCP-server'
-      }
+    req.on('error', (error) => {
+      reject(new Error(`HTTP-förfrågan misslyckades: ${error.message}`));
+    });
+    
+    if (data) {
+      req.write(JSON.stringify(data));
     }
+    
+    req.end();
   });
+}
+
+// Skapa MCP-server
+const server = new McpServer({
+  name: 'SAM-Memory',
+  version: '1.0.0',
+  protocolVersion: '2025-03-26'
 });
+
+logToFile('MCP-server initialiserad');
+
+// Lägg till verktyg för att hämta relevanta konversationer
+server.tool(
+  'get-relevant-conversations',
+  {
+    query: z.string().describe('Frågan eller ämnet att söka efter relaterade konversationer för'),
+    maxResults: z.number().optional().describe('Maximalt antal konversationer att returnera')
+  },
+  async ({ query, maxResults = 3 }) => {
+    try {
+      logToFile(`Hämtar relevanta konversationer för: ${query}`);
+      
+      const result = await fetchMemory(`relevant?query=${encodeURIComponent(query)}&limit=${maxResults}`);
+      
+      if (!result || !result.conversations || result.conversations.length === 0) {
+        return {
+          content: [{ type: 'text', text: 'Inga relevanta tidigare konversationer hittades.' }]
+        };
+      }
+      
+      // Omvandla till läsbart format
+      const conversationsText = result.conversations.map((conv, index) => {
+        const messages = conv.messages.map(m => `${m.role}: ${m.content}`).join('\n');
+        return `[KONVERSATION ${index + 1}]\n${messages}\n`;
+      }).join('\n');
+      
+      return {
+        content: [{ 
+          type: 'text', 
+          text: `Relaterade tidigare konversationer:\n\n${conversationsText}`
+        }]
+      };
+    } catch (error) {
+      logToFile(`Fel vid hämtning av relevanta konversationer: ${error.message}`);
+      return {
+        content: [{ 
+          type: 'text', 
+          text: `Kunde inte hämta relevanta konversationer: ${error.message}`
+        }]
+      };
+    }
+  }
+);
+
+// Lägg till verktyg för att spara en konversation
+server.tool(
+  'save-conversation',
+  {
+    id: z.string().optional().describe('Konversationsid, genereras om den inte anges'),
+    messages: z.array(
+      z.object({
+        role: z.string(),
+        content: z.string()
+      })
+    ).describe('Meddelandena i konversationen'),
+    metadata: z.object({
+      title: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+      projectPath: z.string().optional()
+    }).optional().describe('Metadata för konversationen')
+  },
+  async ({ id, messages, metadata }) => {
+    try {
+      logToFile(`Sparar konversation med ${messages.length} meddelanden`);
+      
+      const data = {
+        id,
+        messages,
+        metadata: metadata || {}
+      };
+      
+      const result = await fetchMemory('conversation', 'POST', data);
+      
+      return {
+        content: [{ 
+          type: 'text', 
+          text: `Konversation sparad med ID: ${result.id}`
+        }]
+      };
+    } catch (error) {
+      logToFile(`Fel vid sparande av konversation: ${error.message}`);
+      return {
+        content: [{ 
+          type: 'text', 
+          text: `Kunde inte spara konversationen: ${error.message}`
+        }]
+      };
+    }
+  }
+);
+
+// Lägg till verktyg för att hämta en enskild konversation
+server.tool(
+  'get-conversation',
+  {
+    id: z.string().describe('ID för konversationen att hämta')
+  },
+  async ({ id }) => {
+    try {
+      logToFile(`Hämtar konversation med ID: ${id}`);
+      
+      const result = await fetchMemory(`conversation/${id}`);
+      
+      if (!result) {
+        return {
+          content: [{ type: 'text', text: `Ingen konversation hittad med ID: ${id}` }]
+        };
+      }
+      
+      // Omvandla till läsbart format
+      const messages = result.messages.map(m => `${m.role}: ${m.content}`).join('\n');
+      
+      return {
+        content: [{ 
+          type: 'text', 
+          text: `Konversation ${id}:\n\n${messages}`
+        }]
+      };
+    } catch (error) {
+      logToFile(`Fel vid hämtning av konversation: ${error.message}`);
+      return {
+        content: [{ 
+          type: 'text', 
+          text: `Kunde inte hämta konversationen: ${error.message}`
+        }]
+      };
+    }
+  }
+);
+
+// Lägg till resurs för minnesstatistik
+server.resource(
+  'memory-stats',
+  'sam://memory-stats',
+  async () => {
+    try {
+      logToFile('Hämtar minnesstatistik');
+      
+      const result = await fetchMemory('stats');
+      
+      return {
+        contents: [{
+          uri: 'sam://memory-stats',
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    } catch (error) {
+      logToFile(`Fel vid hämtning av minnesstatistik: ${error.message}`);
+      return {
+        contents: [{
+          uri: 'sam://memory-stats',
+          text: `Kunde inte hämta minnesstatistik: ${error.message}`
+        }]
+      };
+    }
+  }
+);
 
 // Starta servern
-app.listen(PORT, () => {
-  console.log(`MCP-server körs på port ${PORT}`);
-  console.log('Endpoint: http://localhost:' + PORT + '/mcp');
-}); 
+async function startServer() {
+  try {
+    logToFile('Startar MCP-servern med STDIO-transport');
+    
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    
+    logToFile('MCP-server ansluten och redo');
+    
+    // Skicka periodiska livstecken
+    setInterval(() => {
+      logToFile('MCP-server körs fortfarande');
+    }, 60000);
+    
+  } catch (error) {
+    logToFile(`FEL vid serverstart: ${error.message}`);
+    process.exit(1);
+  }
+}
+
+// Körning som huvudmodul
+if (require.main === module) {
+  logToFile('mcp-server.js körs som huvudmodul.');
+  startServer().catch(err => {
+    logToFile(`Okänt fel vid serverstart: ${err.message}`);
+    process.exit(1);
+  });
+} else {
+  // Exportera för användning i andra moduler
+  module.exports = {
+    startServer
+  };
+} 

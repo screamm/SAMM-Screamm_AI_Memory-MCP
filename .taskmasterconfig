@@ -1,0 +1,11 @@
+{
+  "projectName": "SAM-Screamm_AI_Memory",
+  "projectDescription": "AI Memory system for improved context awareness",
+  "taskDirectory": "tasks",
+  "defaultModel": "claude-3-5-sonnet-20240620",
+  "researchModel": "claude-3-5-sonnet-20240620",
+  "fallbackModel": "gpt-4o",
+  "defaultModelProvider": "anthropic",
+  "researchModelProvider": "anthropic",
+  "fallbackModelProvider": "openai"
+} 

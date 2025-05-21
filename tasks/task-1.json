@@ -1,0 +1,28 @@
+{
+  "id": "1",
+  "title": "Skapa initial projektstruktur",
+  "description": "Skapa grundläggande projektstruktur för SAM-Screamm_AI_Memory inklusive nödvändiga kataloger och konfigurationsfiler.",
+  "status": "completed",
+  "priority": "high",
+  "dependencies": [],
+  "subtasks": [
+    {
+      "id": "1.1",
+      "title": "Skapa bin-katalog för binära filer",
+      "description": "Skapa bin-katalog för att lagra projektets binära filer och skript.",
+      "status": "completed"
+    },
+    {
+      "id": "1.2",
+      "title": "Skapa logs-katalog för loggfiler",
+      "description": "Skapa logs-katalog för att lagra applikationsloggar.",
+      "status": "completed"
+    },
+    {
+      "id": "1.3",
+      "title": "Skapa memory-katalog för minnesdatalagring",
+      "description": "Skapa memory-katalog för att lagra AI-systemets minnesdata.",
+      "status": "completed"
+    }
+  ]
+} 

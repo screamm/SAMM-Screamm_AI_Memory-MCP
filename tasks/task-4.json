@@ -1,0 +1,34 @@
+{
+  "id": "4",
+  "title": "Förbättra Cursor IDE-integrationen",
+  "description": "Förbättra integrationen med Cursor IDE för bättre minneshantering och användarupplevelse.",
+  "status": "pending",
+  "priority": "medium",
+  "dependencies": ["1", "2"],
+  "subtasks": [
+    {
+      "id": "4.1",
+      "title": "Förfina MCP-integration",
+      "description": "Förbättra kommunikationen mellan Cursor IDE och minnesserversystem via Model Control Protocol (MCP).",
+      "status": "pending"
+    },
+    {
+      "id": "4.2",
+      "title": "Utöka minnessamlingsstrategier",
+      "description": "Implementera förbättrade strategier för att samla in och organisera relevant minnesinformation från codebases och konversationer.",
+      "status": "pending"
+    },
+    {
+      "id": "4.3",
+      "title": "Skapa minneshanteringskommandogränssnitt",
+      "description": "Utveckla ett kommandogränssnitt för användarna att hantera minnesdata direkt från Cursor IDE.",
+      "status": "pending"
+    },
+    {
+      "id": "4.4",
+      "title": "Implementera minnesexport och -import",
+      "description": "Skapa funktionalitet för att exportera och importera minnesdata mellan olika projekt.",
+      "status": "pending"
+    }
+  ]
+} 

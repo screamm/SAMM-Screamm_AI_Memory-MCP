@@ -1,0 +1,40 @@
+{
+  "id": "6",
+  "title": "Dokumentation och driftsättning",
+  "description": "Skapa fullständig dokumentation och förbered systemet för driftsättning.",
+  "status": "pending",
+  "priority": "medium",
+  "dependencies": ["3", "4", "5"],
+  "subtasks": [
+    {
+      "id": "6.1",
+      "title": "Skapa användarhandbok",
+      "description": "Skriv en omfattande användarhandbok som förklarar hur man använder systemet.",
+      "status": "pending"
+    },
+    {
+      "id": "6.2",
+      "title": "Skapa API-dokumentation",
+      "description": "Dokumentera alla API-endpoints och deras användning för utvecklare.",
+      "status": "pending"
+    },
+    {
+      "id": "6.3",
+      "title": "Förbereda driftsättningsmiljö",
+      "description": "Konfigurera servrar och miljöer för produktionsdriftsättning.",
+      "status": "pending"
+    },
+    {
+      "id": "6.4",
+      "title": "Skapa CI/CD-pipeline",
+      "description": "Implementera en CI/CD-pipeline för kontinuerlig integrering och driftsättning.",
+      "status": "pending"
+    },
+    {
+      "id": "6.5",
+      "title": "Utveckla underhållsplan",
+      "description": "Skapa en plan för långsiktigt underhåll och uppdateringar av systemet.",
+      "status": "pending"
+    }
+  ]
+} 

@@ -7,6 +7,8 @@ const knownAbbreviations = [
   'c/o',
   'dept.',
   'D.I.Y.',
+  'Dr.',
+  'e.g.',
   'est.',
   'E.T.A.',
   'Inc.',
@@ -19,7 +21,8 @@ const knownAbbreviations = [
   'tel.',
   'temp.',
   'vet.',
-  'vs.'
+  'vs.',
+  'i.e.'
 ]
 
 exports.knownAbbreviations = knownAbbreviations

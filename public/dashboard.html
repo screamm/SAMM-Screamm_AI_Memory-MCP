@@ -8,42 +8,50 @@
   <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
   <style>
     :root {
-      /* Ljust tema (standard variabler) */
-      --bg-color: #f8fafc;
-      --card-bg-color: white;
-      --text-color: #2a2a2a;
-      --border-color: #e1e4e8;
-      --primary-color: #4361ee;
-      --secondary-color: #eef2ff;
-      --accent-color: #3a56e4;
-      --success-color: #34c759;
-      --warning-color: #ff9500;
-      --danger-color: #ff3b30;
-      --inactive-color: #8e8e93;
-      --header-bg: white;
-      --code-bg: #1e2432;
-      --code-text: #f8f8f8;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05);
+      /* Ljust tema (standard variabler) - Modernare pastellfärger */
+      --bg-color: #f5f7fa;
+      --card-bg-color: #ffffff;
+      --text-color: #334155;
+      --border-color: #e2e8f0;
+      --primary-color: #6366f1;
+      --secondary-color: #f0f4ff;
+      --accent-color: #4f46e5;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --inactive-color: #94a3b8;
+      --header-bg: #ffffff;
+      --code-bg: #1e293b;
+      --code-text: #f8fafc;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(100,116,139,0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(100,116,139,0.1);
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --gradient-secondary: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+      --border-radius-base: 0px; /* Ingen border-radius */
     }
     
-    /* Mörkt tema */
+    /* Mörkt tema - Cyber Teal */
     [data-theme="dark"] {
-      --bg-color: #0f1117;
-      --card-bg-color: #1a1d25;
-      --text-color: #e6e8ec;
-      --border-color: #2a2e39;
-      --primary-color: #5d7bf3;
-      --secondary-color: #232736;
-      --accent-color: #6c8bff;
-      --success-color: #32d74b;
-      --warning-color: #ff9f0a;
-      --danger-color: #ff453a;
-      --inactive-color: #8e8e93;
-      --header-bg: #15171e;
-      --code-bg: #0a0c12;
-      --code-text: #f2f4f8;
+      --bg-color: #0d1117; /* GitHub Dark Dimmed background */
+      --card-bg-color: #161b22; /* GitHub Dark Dimmed card background */
+      --text-color: #c9d1d9; /* GitHub Dark Dimmed primary text */
+      --border-color: #30363d; /* GitHub Dark Dimmed border */
+      --primary-color: #58a6ff; /* GitHub Dark Dimmed primary action color */
+      --secondary-color: #21262d; /* En mörkare nyans för sekundära element */
+      --accent-color: #39c5bb;  /* Turkos/Cyan accent */
+      --success-color: #3fb950; /* Grön för framgång */
+      --warning-color: #d29922; /* Gul för varningar */
+      --danger-color: #f85149; /* Röd för faror */
+      --inactive-color: #484f58; /* Mörkare inaktiv färg */
+      --header-bg: #161b22;
+      --code-bg: #0d1117;
+      --code-text: #c9d1d9;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4);
+      --gradient-primary: linear-gradient(135deg, #58a6ff 0%, #39c5bb 100%);
+      --gradient-secondary: linear-gradient(135deg, #161b22 0%, #21262d 100%);
     }
     
     * {
@@ -75,6 +83,7 @@
       border-bottom: 1px solid var(--border-color);
       background-color: var(--header-bg);
       position: relative;
+      border-radius: var(--border-radius-base) var(--border-radius-base) 0 0; /* Ingen border-radius upptill */
     }
     
     header::after {
@@ -84,7 +93,7 @@
       left: 0;
       width: 100%;
       height: 1px;
-      background: linear-gradient(to right, var(--primary-color), transparent);
+      background: var(--gradient-primary);
     }
     
     h1, h2, h3 {
@@ -115,12 +124,13 @@
       font-size: 28px;
       margin-right: 14px;
       color: var(--primary-color);
-      background-color: var(--secondary-color);
-      padding: 8px;
+      background: var(--gradient-secondary);
+      padding: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-left: 3px solid var(--primary-color);
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
+      box-shadow: var(--shadow-sm);
     }
     
     .logo h1 {
@@ -152,6 +162,7 @@
       padding: 8px 12px;
       border: 1px solid var(--border-color);
       transition: all 0.2s ease;
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     .theme-toggle:hover {
@@ -174,13 +185,15 @@
       background-color: var(--card-bg-color);
       border: 1px solid var(--border-color);
       padding: 36px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       box-shadow: var(--shadow-md);
       transition: all 0.3s ease;
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     .card:hover {
       box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
     }
     
     .card-header {
@@ -201,18 +214,22 @@
       width: 14px;
       height: 14px;
       margin-right: 10px;
+      border-radius: 50%;
     }
     
     .status-online {
       background-color: var(--success-color);
+      box-shadow: 0 0 10px var(--success-color);
     }
     
     .status-offline {
       background-color: var(--danger-color);
+      box-shadow: 0 0 10px var(--danger-color);
     }
     
     .status-warning {
       background-color: var(--warning-color);
+      box-shadow: 0 0 10px var(--warning-color);
     }
     
     .status-unknown {
@@ -224,8 +241,8 @@
       align-items: center;
       margin-bottom: 16px;
       padding: 10px 14px;
-      background-color: var(--secondary-color);
-      border-left: 3px solid var(--primary-color);
+      background: var(--gradient-secondary);
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     .status-text {
@@ -258,7 +275,7 @@
     }
     
     button {
-      background-color: var(--primary-color);
+      background: var(--gradient-primary);
       color: white;
       border: none;
       padding: 12px 18px;
@@ -270,11 +287,12 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     button:hover {
-      background-color: var(--accent-color);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
     
     button:active {
@@ -298,9 +316,10 @@
     }
     
     .secondary {
-      background-color: transparent;
+      background: transparent;
       color: var(--primary-color);
       border: 1px solid var(--primary-color);
+      background-image: none;
     }
     
     .secondary:hover {
@@ -321,6 +340,7 @@
       font-size: 14px;
       margin-top: 16px;
       border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     .log-entry {
@@ -336,15 +356,15 @@
     }
     
     .log-entry.error {
-      color: #ff6b6b;
+      color: var(--danger-color);
     }
     
     .log-entry.warning {
-      color: #ffd166;
+      color: var(--warning-color);
     }
     
     .log-entry.info {
-      color: #4ecdc4;
+      color: var(--accent-color);
     }
     
     .notification {
@@ -357,6 +377,7 @@
       box-shadow: var(--shadow-md);
       z-index: 1000;
       display: none;
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     .chart-container {
@@ -365,6 +386,7 @@
       border: 1px solid var(--border-color);
       padding: 16px;
       background-color: var(--bg-color);
+      border-radius: var(--border-radius-base); /* Ingen border-radius */
     }
     
     @media (max-width: 768px) {
@@ -463,15 +485,6 @@
         </div>
         
         <div class="button-group">
-          <button id="restart-memory-server">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-              <path d="M21 3v5h-5"></path>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-              <path d="M8 16H3v5"></path>
-            </svg>
-            <span>Starta om</span>
-          </button>
           <button class="secondary" id="view-memory-ui">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -483,63 +496,39 @@
         </div>
       </div>
       
-      <!-- Integrationsproxy -->
+      <!-- MCP Server -->
       <div class="card">
         <div class="card-header">
-          <h2>Integrationsproxy</h2>
-          <button class="refresh-btn" id="refresh-proxy-server">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 2v6h-6"></path>
-              <path d="M3 12a9 9 0 0 1 15-6.7l3-3"></path>
-              <path d="M3 22v-6h6"></path>
-              <path d="M21 12a9 9 0 0 1-15 6.7l-3 3"></path>
-            </svg>
-            <span>Uppdatera</span>
-          </button>
+          <h2>MCP-server</h2>
+          <span class="info-value">(Hanteras av start.js)</span>
         </div>
         
         <div class="server-status">
-          <div class="status-indicator status-unknown" id="proxy-server-status"></div>
-          <span class="status-text" id="proxy-server-status-text">Kontrollerar status...</span>
+          <div class="status-indicator status-online" id="mcp-server-status"></div>
+          <span class="status-text" id="mcp-server-status-text">Körs (STDIO)</span>
         </div>
         
         <div class="server-info">
           <div class="info-item">
-            <span class="info-label">URL:</span>
-            <span class="info-value" id="proxy-server-url">http://localhost:3100</span>
+            <span class="info-label">Status:</span>
+            <span class="info-value">Aktiv via STDIO</span>
+          </div>
+           <div class="info-item">
+            <span class="info-label">Minnesserver:</span>
+            <span class="info-value" id="mcp-server-memory-target">http://localhost:3000</span>
           </div>
           <div class="info-item">
-            <span class="info-label">API-anrop totalt:</span>
-            <span class="info-value" id="proxy-server-requests">-</span>
+            <span class="info-label">Transport:</span>
+            <span class="info-value">STDIO</span>
           </div>
           <div class="info-item">
-            <span class="info-label">Ansluten till:</span>
-            <span class="info-value" id="proxy-server-connected-to">-</span>
+            <span class="info-label">Verktyg:</span>
+            <span class="info-value" id="mcp-server-tools">all</span>
           </div>
           <div class="info-item">
-            <span class="info-label">Uppetid:</span>
-            <span class="info-value" id="proxy-server-uptime">-</span>
+            <span class="info-label">Aktiva klienter:</span>
+            <span class="info-value" id="mcp-active-clients">Information ej tillgänglig (STDIO)</span>
           </div>
-        </div>
-        
-        <div class="button-group">
-          <button id="restart-proxy-server">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-              <path d="M21 3v5h-5"></path>
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-              <path d="M8 16H3v5"></path>
-            </svg>
-            <span>Starta om</span>
-          </button>
-          <button class="secondary" id="view-proxy-ui">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <path d="M15 3h6v6"></path>
-              <path d="M10 14L21 3"></path>
-            </svg>
-            <span>Öppna UI</span>
-          </button>
         </div>
       </div>
     </div>
@@ -569,7 +558,7 @@
           <span class="info-value" id="system-memory">-</span>
         </div>
         <div class="info-item">
-          <span class="info-label">Diskutrymme:</span>
+          <span class="info-label">Diskutrymme (Simulerat):</span>
           <span class="info-value" id="system-disk">-</span>
         </div>
         <div class="info-item">
@@ -582,7 +571,7 @@
     <!-- Loggsektion -->
     <div class="card logs-section">
       <div class="card-header">
-        <h2>Systemloggar</h2>
+        <h2>Systemloggar (Dashboard)</h2>
         <button class="refresh-btn" id="refresh-logs">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 2v6h-6"></path>
@@ -609,7 +598,6 @@
     const themeText = document.getElementById('theme-text');
     const htmlElement = document.documentElement;
     
-    // Läs in tema från localStorage eller använd mörkt tema som standard
     function initTheme() {
       const savedTheme = localStorage.getItem('sam-theme') || 'dark';
       setTheme(savedTheme);
@@ -636,24 +624,25 @@
       setTheme(newTheme);
     });
     
-    // Initialisera tema
     initTheme();
     
-    // Basurls
-    const memoryServerUrl = localStorage.getItem('apiBaseUrl') || 'http://localhost:3000';
-    const proxyServerUrl = localStorage.getItem('proxyBaseUrl') || 'http://localhost:3100';
-    
-    // Uppdatera URL-visningar
-    document.getElementById('memory-server-url').textContent = memoryServerUrl;
-    document.getElementById('proxy-server-url').textContent = proxyServerUrl;
-    
-    // Hjälpfunktioner
+    // Basurl för minnesserver
+    const memoryServerApiUrl = 'http://localhost:3000'; // Hårdkodad då den är central
+    document.getElementById('memory-server-url').textContent = memoryServerApiUrl;
+    document.getElementById('mcp-server-memory-target').textContent = memoryServerApiUrl;
+
+    // Initialisera MCP server info från miljövariabler (om tillgängligt, annars default)
+    // Detta är statiskt eftersom MCP körs via STDIO och styrs av start.js
+    document.getElementById('mcp-server-tools').textContent = localStorage.getItem('mcpTools') || 'all';
+
+
     function formatUptime(uptimeObj) {
-      if (!uptimeObj) return '-';
-      return `${uptimeObj.days || 0}d ${uptimeObj.hours || 0}h ${uptimeObj.minutes || 0}m`;
+      if (!uptimeObj || typeof uptimeObj.days === 'undefined') return '-';
+      return `${uptimeObj.days}d ${uptimeObj.hours}h ${uptimeObj.minutes}m`;
     }
     
     function formatBytes(bytes) {
+      if (bytes === undefined || bytes === null || isNaN(bytes)) return '0 Bytes';
       if (bytes === 0) return '0 Bytes';
       const k = 1024;
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -661,19 +650,12 @@
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
-    function formatDateTime(dateString) {
-      const date = new Date(dateString);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    }
-    
     function addLogEntry(message, type = 'info') {
       const logs = document.getElementById('system-logs');
       const logEntry = document.createElement('div');
       logEntry.className = `log-entry ${type}`;
-      
       const timestamp = new Date().toLocaleTimeString();
       logEntry.textContent = `[${timestamp}] ${message}`;
-      
       logs.appendChild(logEntry);
       logs.scrollTop = logs.scrollHeight;
     }
@@ -681,7 +663,8 @@
     function showNotification(message, isError = false) {
       const notification = document.getElementById('notification');
       notification.textContent = message;
-      notification.style.backgroundColor = isError ? '#f44336' : '#4caf50';
+      notification.style.backgroundColor = isError ? 'var(--danger-color)' : 'var(--success-color)';
+      notification.style.color = 'white';
       notification.style.display = 'block';
       
       setTimeout(() => {
@@ -689,233 +672,80 @@
       }, 3000);
     }
     
-    function updateServerStatus(server, isOnline, message = '') {
-      const statusElement = document.getElementById(`${server}-server-status`);
-      const textElement = document.getElementById(`${server}-server-status-text`);
+    function updateMemoryServerStatus(isOnline, message = '') {
+      const statusElement = document.getElementById('memory-server-status');
+      const textElement = document.getElementById('memory-server-status-text');
       
       if (isOnline) {
         statusElement.className = 'status-indicator status-online';
         textElement.textContent = 'Online';
-        addLogEntry(`${server === 'memory' ? 'Minnesserver' : 'Integrationsproxy'} online`, 'info');
+        addLogEntry('Minnesserver online', 'info');
       } else {
         statusElement.className = 'status-indicator status-offline';
         textElement.textContent = 'Offline';
-        addLogEntry(`${server === 'memory' ? 'Minnesserver' : 'Integrationsproxy'} offline: ${message}`, 'error');
+        document.getElementById('memory-server-conversations').textContent = '-';
+        document.getElementById('memory-server-knowledge').textContent = '-';
+        document.getElementById('memory-server-uptime').textContent = '-';
+        addLogEntry(`Minnesserver offline: ${message}`, 'error');
       }
     }
     
-    // Kontrollera minnesservern
     async function checkMemoryServer() {
       try {
-        const response = await fetch(`${memoryServerUrl}/api/status`);
+        const response = await fetch(`${memoryServerApiUrl}/api/status`);
+        if (!response.ok) throw new Error(`Status ${response.status}`);
         const data = await response.json();
         
-        updateServerStatus('memory', true);
+        updateMemoryServerStatus(true);
         
-        // Uppdatera information
         document.getElementById('memory-server-conversations').textContent = data.stats.conversations || 0;
         document.getElementById('memory-server-knowledge').textContent = data.stats.knowledgeObjects || 0;
         document.getElementById('memory-server-uptime').textContent = formatUptime(data.uptime);
         
-        // Uppdatera systemresursinformation
-        document.getElementById('system-cpu').textContent = data.system.cpuCores + ' kärnor';
-        document.getElementById('system-memory').textContent = `${data.system.memoryUsage} (${formatBytes(data.system.totalMemory - data.system.freeMemory)} / ${formatBytes(data.system.totalMemory)})`;
-        document.getElementById('system-disk').textContent = data.system.diskSpace.usage;
-        document.getElementById('system-os').textContent = `${data.system.platform} (${data.system.arch})`;
+        document.getElementById('system-cpu').textContent = data.system.cpuUsage ? `${data.system.cpuUsage}` : `${data.system.cpuCores} kärnor`;
+        document.getElementById('system-memory').textContent = data.system.memoryUsage ? `${data.system.memoryUsage} (${formatBytes(data.system.totalMemory - data.system.freeMemory)} / ${formatBytes(data.system.totalMemory)})` : '-';
+        document.getElementById('system-disk').textContent = data.system.diskSpace ? data.system.diskSpace.usage : '-';
+        document.getElementById('system-os').textContent = data.system.platform ? `${data.system.platform} (${data.system.arch})` : '-';
         
         addLogEntry(`Minnesserver uppdaterad. ${data.stats.conversations} konversationer, ${data.stats.knowledgeObjects} kunskapsobjekt.`);
       } catch (error) {
         console.error('Fel vid kontroll av minnesserver:', error);
-        updateServerStatus('memory', false, error.message);
+        updateMemoryServerStatus(false, error.message);
       }
     }
-    
-    // Kontrollera integrationsproxyn
-    async function checkProxyServer() {
-      try {
-        // Lägg till en timeout och bättre felhantering
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 sekunder timeout
         
-        try {
-          // Försök först med standard API-anrop
-          const response = await fetch(`${proxyServerUrl}/api/status`, {
-            signal: controller.signal,
-            mode: 'cors',
-            headers: {
-              'Accept': 'application/json'
-            }
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok) {
-            const data = await response.json();
-            
-            updateServerStatus('proxy', true);
-            
-            // Uppdatera information
-            document.getElementById('proxy-server-requests').textContent = data.stats.totalRequests || 0;
-            document.getElementById('proxy-server-connected-to').textContent = 
-              `${data.connections.memoryServer.status === 'connected' ? 'Ansluten till' : 'Frånkopplad från'} ${data.connections.memoryServer.url}`;
-            document.getElementById('proxy-server-uptime').textContent = formatUptime(data.uptime);
-            
-            // Lägg till mer detaljer till loggen
-            addLogEntry(`Proxy uppdaterad. ${data.stats.claudeRequests} Claude-anrop, ${data.stats.geminiRequests} Gemini-anrop.`);
-            
-            if (data.stats.lastError) {
-              addLogEntry(`Senaste fel på proxy: ${data.stats.lastError.message} (${formatDateTime(data.stats.lastError.time)})`, 'warning');
-            }
-          } else {
-            throw new Error(`Server svarade med status: ${response.status}`);
-          }
-        } catch (apiError) {
-          // Om API-anropet misslyckas, försök med en enkel tillgänglighetskontroll istället
-          clearTimeout(timeoutId);
-          
-          // Skapa ett <img> element och försök ladda en bild från servern
-          // Detta kringgår CORS-begränsningar
-          const img = new Image();
-          const checkUrl = `${proxyServerUrl}/favicon.ico`;
-          
-          const imgPromise = new Promise((resolve, reject) => {
-            img.onload = () => resolve(true);
-            img.onerror = () => {
-              // Även om vi får 404 betyder det att servern är uppe
-              // Men om nätverksfelet är något annat (t.ex. timeout), är servern förmodligen nere
-              const networkError = event && event.type === 'error';
-              resolve(!networkError);
-            };
-            // Lägg till en slumpmässig parameter för att undvika cache
-            img.src = `${checkUrl}?noCache=${Date.now()}`;
-          });
-          
-          // Sätt en timeout för bildinladdningsförsöket
-          const timeoutPromise = new Promise((resolve) => {
-            setTimeout(() => resolve(false), 2000);
-          });
-          
-          // Vänta på antingen bildinladdning eller timeout
-          const isReachable = await Promise.race([imgPromise, timeoutPromise]);
-          
-          if (isReachable) {
-            // Server svarar men API kanske inte fungerar
-            updateServerStatus('proxy', true);
-            document.getElementById('proxy-server-requests').textContent = "N/A (API ej tillgänglig)";
-            document.getElementById('proxy-server-connected-to').textContent = "Status okänd";
-            document.getElementById('proxy-server-uptime').textContent = "N/A";
-            addLogEntry(`Proxy är uppe men API:et svarar inte: ${apiError.message}`, 'warning');
-          } else {
-            throw new Error("Kunde inte nå servern");
-          }
-        }
-      } catch (error) {
-        console.error('Fel vid kontroll av proxy:', error);
-        updateServerStatus('proxy', false, error.message);
-        
-        // Försök en sista gång med en ren XHR-förfrågan för att undvika CORS
-        try {
-          const xhr = new XMLHttpRequest();
-          xhr.timeout = 2000; // 2 sekunder timeout
-          
-          // Använd HEAD-metoden för minimal overhead
-          xhr.open('HEAD', proxyServerUrl, true);
-          
-          xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              updateServerStatus('proxy', true);
-              document.getElementById('proxy-server-requests').textContent = "N/A (endast HEAD-kontroll)";
-              addLogEntry("Proxy är tillgänglig men API är inte tillgängligt", 'warning');
-            }
-          };
-          
-          xhr.send();
-        } catch (xhrError) {
-          // Ignorera fel - vi har redan uppdaterat statusen som offline
-        }
-      }
-    }
-    
-    // Uppdatera systemresurser - använder nu faktiska data
-    function updateSystemResources() {
-      checkMemoryServer(); // Detta kommer också uppdatera systeminformationen
-    }
-    
-    // Hantera omstartsknapparna
-    document.getElementById('restart-memory-server').addEventListener('click', async () => {
-      if (confirm('Är du säker på att du vill starta om minnesservern?')) {
-        addLogEntry('Försöker starta om minnesservern...', 'warning');
-        
-        try {
-          // I en verklig implementation skulle detta anropa en endpoint för att starta om servern
-          // För denna demo simulerar vi bara en omstart
-          updateServerStatus('memory', false, 'Startar om...');
-          
-          setTimeout(async () => {
-            await checkMemoryServer();
-            showNotification('Minnesservern har startats om');
-          }, 2000);
-        } catch (error) {
-          console.error('Fel vid omstart av server:', error);
-          showNotification('Kunde inte starta om minnesservern', true);
-        }
-      }
-    });
-    
-    document.getElementById('restart-proxy-server').addEventListener('click', async () => {
-      if (confirm('Är du säker på att du vill starta om integrationsproxyn?')) {
-        addLogEntry('Försöker starta om integrationsproxyn...', 'warning');
-        
-        try {
-          // I en verklig implementation skulle detta anropa en endpoint för att starta om servern
-          // För denna demo simulerar vi bara en omstart
-          updateServerStatus('proxy', false, 'Startar om...');
-          
-          setTimeout(async () => {
-            await checkProxyServer();
-            showNotification('Integrationsproxyn har startats om');
-          }, 2000);
-        } catch (error) {
-          console.error('Fel vid omstart av proxy:', error);
-          showNotification('Kunde inte starta om integrationsproxyn', true);
-        }
-      }
-    });
-    
-    // Hantera UI-knappar
     document.getElementById('view-memory-ui').addEventListener('click', () => {
-      window.open(memoryServerUrl, '_blank');
+      window.open(memoryServerApiUrl, '_blank');
     });
     
-    document.getElementById('view-proxy-ui').addEventListener('click', () => {
-      window.open(proxyServerUrl, '_blank');
-    });
-    
-    // Uppdateringsknappar
     document.getElementById('refresh-memory-server').addEventListener('click', checkMemoryServer);
-    document.getElementById('refresh-proxy-server').addEventListener('click', checkProxyServer);
-    document.getElementById('refresh-system-resources').addEventListener('click', updateSystemResources);
+    document.getElementById('refresh-system-resources').addEventListener('click', checkMemoryServer); // System resources are part of memory server status
+    
     document.getElementById('refresh-all').addEventListener('click', () => {
-      checkMemoryServer();
-      checkProxyServer();
       addLogEntry('Uppdaterar all information...', 'info');
+      checkMemoryServer();
+      // MCP server status is static as it's managed by start.js
+      document.getElementById('mcp-server-status').className = 'status-indicator status-online';
+      document.getElementById('mcp-server-status-text').textContent = 'Körs (STDIO)';
+      addLogEntry('MCP-serverstatus är statisk (hanteras av start.js).', 'info');
     });
     
     document.getElementById('refresh-logs').addEventListener('click', () => {
-      addLogEntry('Loggarna uppdaterade manuellt', 'info');
+      addLogEntry('Loggarna uppdaterade manuellt (endast dashboard-loggar).', 'info');
     });
     
-    // Initiera sidan
     window.addEventListener('load', () => {
       addLogEntry('Dashboard laddad med tema: ' + (localStorage.getItem('sam-theme') || 'dark'));
       checkMemoryServer();
-      checkProxyServer();
       
-      // Periodisk uppdatering var 30:e sekund
+      // Set initial MCP server status (since it's not fetched via HTTP)
+      document.getElementById('mcp-server-status').className = 'status-indicator status-online';
+      document.getElementById('mcp-server-status-text').textContent = 'Körs (STDIO)';
+      addLogEntry('MCP-serverstatus är statisk (hanteras av start.js).', 'info');
+
       setInterval(() => {
         checkMemoryServer();
-        checkProxyServer();
-      }, 30000);
+      }, 30000); // Refresh memory server status every 30 seconds
     });
   </script>
 </body>

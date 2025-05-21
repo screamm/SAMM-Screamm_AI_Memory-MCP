@@ -1,0 +1,40 @@
+{
+  "id": "5",
+  "title": "Testa applikationen",
+  "description": "Genomför omfattande testning av hela applikationssystemet för att säkerställa funktionalitet, prestanda och stabilitet.",
+  "status": "pending",
+  "priority": "high",
+  "dependencies": ["2", "3", "4"],
+  "subtasks": [
+    {
+      "id": "5.1",
+      "title": "Skapa automatiserade enhetstester",
+      "description": "Utveckla omfattande enhetstester för alla kärnkomponenter i systemet.",
+      "status": "pending"
+    },
+    {
+      "id": "5.2",
+      "title": "Genomföra integrationstester",
+      "description": "Testa integrationen mellan serverkomponenter, minneshantering och Cursor IDE.",
+      "status": "pending"
+    },
+    {
+      "id": "5.3",
+      "title": "Utföra prestandatester",
+      "description": "Testa systemets prestanda under hög belastning och med stora mängder minnesdata.",
+      "status": "pending"
+    },
+    {
+      "id": "5.4",
+      "title": "Genomföra användartester",
+      "description": "Låt verkliga användare testa systemet och samla in feedback för förbättringar.",
+      "status": "pending"
+    },
+    {
+      "id": "5.5",
+      "title": "Säkerhetstester",
+      "description": "Genomför säkerhetstester för att identifiera och åtgärda sårbarheter i systemet.",
+      "status": "pending"
+    }
+  ]
+} 

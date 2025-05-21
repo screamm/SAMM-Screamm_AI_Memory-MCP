@@ -27,6 +27,7 @@ app.use(express.static('public'));
 const memoryStore = {
   conversations: {},
   contextualKnowledge: {},
+  genericMemoryItems: {}, // Ny datastore för generiska minnesobjekt
   loadFromDisk() {
     try {
       if (fs.existsSync(path.join(MEMORY_DIR, 'conversations.json'))) {
@@ -37,6 +38,11 @@ const memoryStore = {
       if (fs.existsSync(path.join(MEMORY_DIR, 'knowledge.json'))) {
         this.contextualKnowledge = JSON.parse(
           fs.readFileSync(path.join(MEMORY_DIR, 'knowledge.json'), 'utf8')
+        );
+      }
+      if (fs.existsSync(path.join(MEMORY_DIR, 'genericItems.json'))) { // Ladda generiska objekt
+        this.genericMemoryItems = JSON.parse(
+          fs.readFileSync(path.join(MEMORY_DIR, 'genericItems.json'), 'utf8')
         );
       }
     } catch (error) {
@@ -52,6 +58,10 @@ const memoryStore = {
       fs.writeFileSync(
         path.join(MEMORY_DIR, 'knowledge.json'),
         JSON.stringify(this.contextualKnowledge, null, 2)
+      );
+      fs.writeFileSync( // Spara generiska objekt
+        path.join(MEMORY_DIR, 'genericItems.json'),
+        JSON.stringify(this.genericMemoryItems, null, 2)
       );
     } catch (error) {
       console.error('Fel vid sparande av minne:', error);
@@ -444,6 +454,127 @@ app.delete('/api/memory/knowledge/:key', (req, res) => {
   memoryStore.saveToDisk();
   
   res.json({ success: true });
+});
+
+// API-rutter för generiska minnesobjekt (CRUD)
+
+// Skapa ett nytt generiskt minnesobjekt
+app.post('/api/memory/item', (req, res) => {
+  serverStats.apiRequests++;
+  const { id, content, type, metadata } = req.body;
+
+  if (!id || !content) {
+    serverStats.errors++;
+    serverStats.lastError = 'ID och content krävs för att skapa ett minnesobjekt.';
+    return res.status(400).json({ error: 'ID och content krävs' });
+  }
+
+  if (memoryStore.genericMemoryItems[id]) {
+    serverStats.errors++;
+    serverStats.lastError = `Minnesobjekt med ID ${id} finns redan.`;
+    return res.status(409).json({ error: 'Objekt med detta ID finns redan' });
+  }
+
+  memoryStore.genericMemoryItems[id] = {
+    id,
+    content,
+    type: type || 'generic',
+    metadata: metadata || {},
+    createdAt: new Date().toISOString(),
+    lastUpdatedAt: new Date().toISOString()
+  };
+
+  memoryStore.saveToDisk();
+  res.status(201).json({ success: true, id });
+});
+
+// Hämta ett specifikt generiskt minnesobjekt
+app.get('/api/memory/item/:id', (req, res) => {
+  serverStats.apiRequests++;
+  const { id } = req.params;
+
+  if (!memoryStore.genericMemoryItems[id]) {
+    serverStats.errors++;
+    serverStats.lastError = `Minnesobjekt med ID ${id} hittades inte.`;
+    return res.status(404).json({ error: 'Minnesobjekt hittades inte' });
+  }
+
+  res.json(memoryStore.genericMemoryItems[id]);
+});
+
+// Uppdatera ett befintligt generiskt minnesobjekt
+app.put('/api/memory/item/:id', (req, res) => {
+  serverStats.apiRequests++;
+  const { id } = req.params;
+  const { content, type, metadata } = req.body;
+
+  if (!memoryStore.genericMemoryItems[id]) {
+    serverStats.errors++;
+    serverStats.lastError = `Minnesobjekt med ID ${id} hittades inte för uppdatering.`;
+    return res.status(404).json({ error: 'Minnesobjekt hittades inte' });
+  }
+
+  // Behåll befintliga värden om de inte anges i request body
+  const itemToUpdate = memoryStore.genericMemoryItems[id];
+  itemToUpdate.content = content !== undefined ? content : itemToUpdate.content;
+  itemToUpdate.type = type !== undefined ? type : itemToUpdate.type;
+  itemToUpdate.metadata = metadata !== undefined ? metadata : itemToUpdate.metadata;
+  itemToUpdate.lastUpdatedAt = new Date().toISOString();
+
+  memoryStore.genericMemoryItems[id] = itemToUpdate;
+  memoryStore.saveToDisk();
+  res.json({ success: true, id, updatedItem: itemToUpdate });
+});
+
+// Ta bort ett specifikt generiskt minnesobjekt
+app.delete('/api/memory/item/:id', (req, res) => {
+  serverStats.apiRequests++;
+  const { id } = req.params;
+
+  if (!memoryStore.genericMemoryItems[id]) {
+    serverStats.errors++;
+    serverStats.lastError = `Minnesobjekt med ID ${id} hittades inte för borttagning.`;
+    return res.status(404).json({ error: 'Minnesobjekt hittades inte' });
+  }
+
+  delete memoryStore.genericMemoryItems[id];
+  memoryStore.saveToDisk();
+  res.json({ success: true, id });
+});
+
+// Hämta alla generiska minnesobjekt (med paginering och filtrering)
+app.get('/api/memory/items', (req, res) => {
+  serverStats.apiRequests++;
+  let { page = 1, limit = 10, type } = req.query;
+  page = parseInt(page);
+  limit = parseInt(limit);
+
+  let itemsArray = Object.values(memoryStore.genericMemoryItems);
+
+  // Filtrera på typ om angivet
+  if (type) {
+    itemsArray = itemsArray.filter(item => item.type === type);
+  }
+
+  // Sortera efter senaste uppdatering (nyast först)
+  itemsArray.sort((a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt));
+
+  const totalItems = itemsArray.length;
+  const totalPages = Math.ceil(totalItems / limit);
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  const paginatedItems = itemsArray.slice(startIndex, endIndex);
+
+  res.json({
+    success: true,
+    data: paginatedItems,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalItems,
+      itemsPerPage: limit
+    }
+  });
 });
 
 // Felhantering

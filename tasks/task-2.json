@@ -1,0 +1,28 @@
+{
+  "id": "2",
+  "title": "Förbättra minneshanteringssystemet",
+  "description": "Implementera bättre sätt att hantera och lagra AI-minne för att öka effektiviteten i samtalsflöden.",
+  "status": "pending",
+  "priority": "medium",
+  "dependencies": ["1"],
+  "subtasks": [
+    {
+      "id": "2.1",
+      "title": "Utforska olika minneslagringsformat",
+      "description": "Undersök olika format för att lagra minnesdata, såsom vektordatabaser, JSON-filer, eller strukturerade databaser.",
+      "status": "pending"
+    },
+    {
+      "id": "2.2",
+      "title": "Implementera minnesprioriteringsalgoritm",
+      "description": "Skapa en algoritm som prioriterar viktig minnesdata och filtrerar bort mindre relevanta minnesenheter.",
+      "status": "pending"
+    },
+    {
+      "id": "2.3",
+      "title": "Integrera minnessökning",
+      "description": "Implementera en semantisk sökfunktion för att återkalla relevanta minnesenheter baserat på kontext.",
+      "status": "pending"
+    }
+  ]
+} 

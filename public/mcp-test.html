@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Client Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    pre { background-color: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    button { padding: 8px 12px; margin: 5px; cursor: pointer; }
+    #output { border: 1px solid #ddd; padding: 10px; min-height: 200px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>MCP Client Test</h1>
+  
+  <div>
+    <h2>Connection</h2>
+    <div>
+      <label for="serverUrl">Server URL:</label>
+      <input type="text" id="serverUrl" value="http://localhost:3220/mcp" style="width: 300px;">
+      <button id="connectBtn">Connect</button>
+      <button id="disconnectBtn" disabled>Disconnect</button>
+    </div>
+  </div>
+  
+  <div>
+    <h2>Test Tools</h2>
+    <div>
+      <label for="message">Message:</label>
+      <input type="text" id="message" value="Hello from test client!" style="width: 300px;">
+      <button id="echoBtn" disabled>Call echo tool</button>
+    </div>
+  </div>
+  
+  <div>
+    <h2>Output</h2>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    // Enkelt MCP-testklient
+    document.addEventListener('DOMContentLoaded', () => {
+      const outputEl = document.getElementById('output');
+      const serverUrlEl = document.getElementById('serverUrl');
+      const messageEl = document.getElementById('message');
+      const connectBtn = document.getElementById('connectBtn');
+      const disconnectBtn = document.getElementById('disconnectBtn');
+      const echoBtn = document.getElementById('echoBtn');
+      
+      let sessionId = null;
+      
+      function log(message) {
+        const timestamp = new Date().toISOString();
+        outputEl.textContent += `[${timestamp}] ${message}\n`;
+        outputEl.scrollTop = outputEl.scrollHeight;
+      }
+      
+      // Connect to MCP server
+      connectBtn.addEventListener('click', async () => {
+        try {
+          const serverUrl = serverUrlEl.value;
+          log(`Ansluter till ${serverUrl}...`);
+          
+          // Skapa unik session ID
+          sessionId = crypto.randomUUID();
+          log(`Session ID: ${sessionId}`);
+          
+          // Skicka initialize
+          const initResponse = await fetch(serverUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'mcp-session-id': sessionId
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'initialize',
+              params: {
+                protocolVersion: '2025-03-26'
+              },
+              id: 1
+            })
+          });
+          
+          if (!initResponse.ok) {
+            throw new Error(`HTTP error: ${initResponse.status}`);
+          }
+          
+          const initData = await initResponse.json();
+          log(`Server svarade: ${JSON.stringify(initData, null, 2)}`);
+          
+          if (initData.result) {
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+            echoBtn.disabled = false;
+            log('Anslutning lyckades! Server version: ' + 
+                (initData.result.server?.version || 'okänd'));
+                
+            // Lista tillgängliga verktyg
+            if (initData.result.tools) {
+              log(`Tillgängliga verktyg: ${Object.keys(initData.result.tools).join(', ')}`);
+            }
+          } else {
+            log(`Fel vid anslutning: ${JSON.stringify(initData.error)}`);
+          }
+        } catch (error) {
+          log(`Fel: ${error.message}`);
+        }
+      });
+      
+      // Disconnect from MCP server
+      disconnectBtn.addEventListener('click', async () => {
+        try {
+          if (!sessionId) return;
+          
+          const serverUrl = serverUrlEl.value;
+          log(`Kopplar från ${serverUrl}...`);
+          
+          // Skicka shutdown
+          await fetch(serverUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'mcp-session-id': sessionId
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'shutdown',
+              params: {},
+              id: 2
+            })
+          });
+          
+          sessionId = null;
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+          echoBtn.disabled = true;
+          log('Frånkopplad från servern');
+        } catch (error) {
+          log(`Fel: ${error.message}`);
+        }
+      });
+      
+      // Call echo tool
+      echoBtn.addEventListener('click', async () => {
+        try {
+          if (!sessionId) return;
+          
+          const message = messageEl.value;
+          const serverUrl = serverUrlEl.value;
+          log(`Anropar ekoverktyg med meddelande: "${message}"...`);
+          
+          // Skicka anrop till verktyget
+          const toolResponse = await fetch(serverUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'mcp-session-id': sessionId
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'execute',
+              params: {
+                name: 'http-echo',
+                parameters: {
+                  message: message
+                }
+              },
+              id: 3
+            })
+          });
+          
+          if (!toolResponse.ok) {
+            throw new Error(`HTTP error: ${toolResponse.status}`);
+          }
+          
+          const toolData = await toolResponse.json();
+          log(`Svar från verktyg: ${JSON.stringify(toolData, null, 2)}`);
+        } catch (error) {
+          log(`Fel: ${error.message}`);
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

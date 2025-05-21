@@ -7,19 +7,21 @@ const minimist = require('minimist');
 
 // Parsa argument
 const argv = minimist(process.argv.slice(2), {
-  string: ['tools', 'memory-server', 'port'],
+  string: ['tools', 'memory-server', 'port', 'transport'],
   boolean: ['help', 'version'],
   alias: {
     h: 'help',
     v: 'version',
     t: 'tools',
     p: 'port',
-    m: 'memory-server'
+    m: 'memory-server',
+    T: 'transport'
   },
   default: {
     tools: 'all',
     port: 3200,
-    'memory-server': 'http://localhost:3000'
+    'memory-server': 'http://localhost:3000',
+    transport: 'stdio'
   }
 });
 
@@ -38,22 +40,21 @@ if (argv.help) {
                                   Tillgängliga verktyg: conversations,knowledge,search,all
     -p, --port <port>             Port som MCP-servern ska köra på (standard: 3200)
     -m, --memory-server <url>     URL till minnesservern (standard: http://localhost:3000)
+    -T, --transport <transport>   Transport att använda: stdio eller http (standard: stdio)
     
   Exempel:
     npx -y @sam/cursor-memory --tools=all
     npx -y @sam/cursor-memory --tools=conversations,knowledge --port=3300
+    npx -y @sam/cursor-memory --transport=http
     
   Konfigurationsexempel för Cursor:
     {
       "mcpServers": {
         "sam-memory": {
-          "command": "npx",
+          "command": "node",
           "args": [
-            "-y",
-            "@sam/cursor-memory",
-            "--tools=all"
-          ],
-          "url": "http://localhost:3200/mcp"
+            "./mcp-server.js"
+          ]
         }
       }
     }
@@ -72,6 +73,7 @@ if (argv.version) {
 const toolsArg = argv.tools;
 const port = argv.port;
 const memoryServer = argv['memory-server'];
+const transport = argv.transport;
 
 // Visa startkonfiguration
 console.log(`
@@ -80,6 +82,7 @@ SAM Cursor Memory - MCP Server
 Verktyg:        ${toolsArg}
 MCP Port:       ${port}
 Memory Server:  ${memoryServer}
+Transport:      ${transport}
 `);
 
 // Starta minnesservern om det behövs
@@ -119,13 +122,21 @@ function startMcpServer() {
     ...process.env,
     MCP_PORT: port,
     MCP_MEMORY_SERVER: memoryServer,
-    MCP_TOOLS: toolsArg
+    MCP_TOOLS: toolsArg,
+    MCP_TRANSPORT: transport
   };
   
   const mcpProcess = spawn('node', [path.join(__dirname, '../mcp-server.js')], {
     env,
-    stdio: 'inherit'
+    stdio: transport === 'stdio' ? 'pipe' : 'inherit'
   });
+  
+  if (transport === 'stdio') {
+    // När vi använder STDIO, måste vi föra vidare I/O till Cursor-klienten
+    process.stdin.pipe(mcpProcess.stdin);
+    mcpProcess.stdout.pipe(process.stdout);
+    mcpProcess.stderr.pipe(process.stderr);
+  }
   
   mcpProcess.on('error', (error) => {
     console.error('MCP-server fel:', error);

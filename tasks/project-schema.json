@@ -1,0 +1,55 @@
+{
+  "projectName": "SAM-Screamm_AI_Memory",
+  "description": "Ett minneshanteringssystem för AI-assistenter som hjälper till att bevara kontext och förbättra samtalsflöden.",
+  "version": "1.0.0",
+  "directories": [
+    {
+      "name": "bin",
+      "description": "Binära filer och körningsskript"
+    },
+    {
+      "name": "logs",
+      "description": "Loggfiler för applikationen"
+    },
+    {
+      "name": "memory",
+      "description": "Lagring av AI-minnesdata"
+    },
+    {
+      "name": "public",
+      "description": "Publika filer och resurser"
+    },
+    {
+      "name": "tasks",
+      "description": "TaskMaster-uppgifter och projekthantering"
+    }
+  ],
+  "mainFiles": [
+    {
+      "name": "cursor-integration.js",
+      "description": "Integration med Cursor IDE"
+    },
+    {
+      "name": "cursor-memory-extension.js",
+      "description": "Minneshantering för Cursor"
+    },
+    {
+      "name": "mcp-server.js",
+      "description": "MCP-server för modellkommunikation"
+    },
+    {
+      "name": "server.js",
+      "description": "Huvudserver för applikationen"
+    },
+    {
+      "name": "start.js",
+      "description": "Startskript för applikationen"
+    }
+  ],
+  "technologies": [
+    "Node.js",
+    "JavaScript",
+    "AI/ML",
+    "Cursor IDE Integration"
+  ]
+} 
