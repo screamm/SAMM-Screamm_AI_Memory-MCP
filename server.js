@@ -7,10 +7,12 @@ const cors = require('cors');
 const natural = require('natural');
 const os = require('os');
 const osUtils = require('os-utils');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MEMORY_DIR = path.join(__dirname, 'memory');
+const LOG_DIR = path.join(__dirname, 'logs');
 const startTime = new Date();
 
 // Säkerställ att minnesmappen finns
@@ -18,10 +20,107 @@ if (!fs.existsSync(MEMORY_DIR)) {
   fsExtra.mkdirpSync(MEMORY_DIR);
 }
 
+// Säkerställ att loggmappen finns
+if (!fs.existsSync(LOG_DIR)) {
+  fsExtra.mkdirpSync(LOG_DIR);
+}
+
+// Loggfunktion
+function logToFile(message, type = 'INFO') {
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] [${type}] ${message}\n`;
+  fs.appendFileSync(path.join(LOG_DIR, 'server.log'), logMessage);
+  console.log(logMessage.trim());
+}
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+// Aktivt spår av de pågående konversationerna (för att automatiskt spara)
+// Nyckeln är en unik ID för varje konversationsflöde
+const activeConversations = {};
+
+// MCP-förfrågningar middleware
+app.use((req, res, next) => {
+  // Logga alla inkommande förfrågningar
+  logToFile(`${req.method} ${req.url}`, 'REQUEST');
+
+  // Automatisk konversationssparning
+  if (req.method === 'POST' && req.body && req.body.messages && Array.isArray(req.body.messages)) {
+    const convId = req.body.conversation_id || `auto-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const messages = req.body.messages;
+
+    logToFile(`Hittade en konversation med ${messages.length} meddelanden: ${convId}`, 'AUTO-SAVE');
+
+    // Spara konversationen direkt
+    setTimeout(() => {
+      try {
+        // Bara spara om det finns minst ett användarmeddelande
+        const hasUserMessage = messages.some(m => m.role === 'user');
+        
+        if (hasUserMessage) {
+          // Skapa metadata
+          const metadata = {
+            title: messages.find(m => m.role === 'user')?.content?.substring(0, 50) || `Konversation ${convId}`,
+            tags: ['auto-sparad'],
+            source: 'express-middleware',
+            savedAt: new Date().toISOString()
+          };
+
+          // Spara till minneslagret
+          memoryStore.conversations[convId] = {
+            id: convId,
+            messages: messages.map(msg => ({
+              ...msg,
+              timestamp: msg.timestamp || new Date().toISOString()
+            })),
+            metadata,
+            lastUpdated: new Date().toISOString()
+          };
+
+          memoryStore.saveToDisk();
+          logToFile(`Sparade konversation automatiskt: ${convId} (${messages.length} meddelanden)`, 'AUTO-SAVE');
+        } else {
+          logToFile(`Hoppade över konversation utan användarmeddelande: ${convId}`, 'AUTO-SAVE');
+        }
+      } catch (error) {
+        logToFile(`Fel vid automatisk sparning: ${error.message}`, 'ERROR');
+      }
+    }, 0);
+  }
+
+  // Fortsätt till nästa middleware
+  next();
+});
+
+// Rensa gamla inaktiva konversationer regelbundet
+setInterval(() => {
+  const now = Date.now();
+  const timeout = 10 * 60 * 1000; // 10 minuter
+  
+  for (const [id, conv] of Object.entries(activeConversations)) {
+    // Spara konversationen om den har varit inaktiv länge
+    if (now - conv.lastActivity > timeout) {
+      if (conv.hasUser && conv.hasAssistant && conv.messages.length >= 2) {
+        // Spara till minneslagret
+        memoryStore.conversations[id] = {
+          id,
+          messages: conv.messages,
+          metadata: conv.metadata,
+          lastUpdated: new Date().toISOString()
+        };
+        
+        memoryStore.saveToDisk();
+        console.log(`Konversation sparad efter inaktivitet med ID: ${id} (${conv.messages.length} meddelanden)`);
+      }
+      
+      // Ta bort från aktiva konversationer
+      delete activeConversations[id];
+    }
+  }
+}, 60000); // Kontrollera varje minut
 
 // Datastruktur för minne
 const memoryStore = {
@@ -457,6 +556,47 @@ app.delete('/api/memory/knowledge/:key', (req, res) => {
 });
 
 // API-rutter för generiska minnesobjekt (CRUD)
+
+// MCP-test endpoint för att simulera en MCP-förfrågan
+app.post('/api/mcp-test-completion', (req, res) => {
+  serverStats.apiRequests++;
+  
+  logToFile(`Tog emot en MCP-testförfrågan`, 'MCP-TEST');
+  
+  const { messages } = req.body;
+  
+  if (!messages || !Array.isArray(messages)) {
+    serverStats.errors++;
+    serverStats.lastError = 'Meddelanden krävs och måste vara en array';
+    return res.status(400).json({ error: 'Meddelanden krävs och måste vara en array' });
+  }
+  
+  logToFile(`Antal meddelanden i förfrågan: ${messages.length}`, 'MCP-TEST');
+  
+  // Simulera ett LLM-svar
+  const assistantMessage = {
+    role: 'assistant',
+    content: 'Detta är ett automatiskt genererat svar från en simulerad MCP-förfrågan. Din förfrågan har sparats automatiskt i minnesservern.'
+  };
+  
+  // Lägg till assistentens svar i meddelanden innan middleware körs
+  req.body.messages = [...messages, assistantMessage];
+  
+  // Skapa ett konversations-ID om det inte finns
+  if (!req.body.conversation_id) {
+    req.body.conversation_id = `test-conv-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  }
+  
+  logToFile(`Genererade svar med konversations-ID: ${req.body.conversation_id}`, 'MCP-TEST');
+  
+  // Skicka svar
+  res.json({
+    message: assistantMessage,
+    conversation_id: req.body.conversation_id
+  });
+  
+  logToFile(`MCP-test-förfrågan bearbetad med ${messages.length} meddelanden, totalt ${req.body.messages.length} efter svar`, 'MCP-TEST');
+});
 
 // Skapa ett nytt generiskt minnesobjekt
 app.post('/api/memory/item', (req, res) => {

@@ -12,6 +12,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const crypto = require('crypto');
 
 // Konfigurera loggning
 const logDir = path.join(__dirname, 'logs');
@@ -77,6 +78,127 @@ async function fetchMemory(endpoint, method = 'GET', data = null) {
     
     req.end();
   });
+}
+
+// Funktion för att automatiskt spara konversationer
+// Denna funktion anropas av MCP-servern efter varje interaktion
+let currentConversation = { messages: [], hasUser: false, hasAssistant: false };
+let conversationId = null;
+
+// Generera ett unikt ID för konversationen
+function generateConversationId() {
+  return `conv-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+}
+
+// Spara meddelande och kontrollera om vi ska spara konversationen
+async function trackMessage(message) {
+  try {
+    if (message && typeof message === 'object') {
+      // Hantera LLM-förfrågningar och svar
+      if (message.type === 'request' && message.data && message.data.messages) {
+        // Först sätter vi ett nytt konversations-ID om vi inte har ett
+        if (!conversationId) {
+          conversationId = generateConversationId();
+          currentConversation = { messages: [], hasUser: false, hasAssistant: false };
+          logToFile(`Ny konversation startad med ID: ${conversationId}`);
+        }
+        
+        // Lägg till alla meddelanden i konversationen
+        for (const msg of message.data.messages) {
+          if (msg.role && msg.content) {
+            currentConversation.messages.push({
+              role: msg.role,
+              content: msg.content,
+              timestamp: new Date().toISOString()
+            });
+            
+            if (msg.role === 'user') {
+              currentConversation.hasUser = true;
+            } else if (msg.role === 'assistant') {
+              currentConversation.hasAssistant = true;
+            }
+          }
+        }
+      } else if (message.type === 'response' && message.data && message.data.message) {
+        // För LLM-svar, lägg till assistentens meddelande
+        const msg = message.data.message;
+        if (msg.role && msg.content) {
+          currentConversation.messages.push({
+            role: msg.role,
+            content: msg.content,
+            timestamp: new Date().toISOString()
+          });
+          
+          if (msg.role === 'assistant') {
+            currentConversation.hasAssistant = true;
+            
+            // Assistenten har svarat, så vi kan spara konversationen
+            if (currentConversation.hasUser && currentConversation.hasAssistant) {
+              await saveCurrentConversation();
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    logToFile(`Fel vid spårning av meddelande: ${error.message}`);
+  }
+}
+
+// Spara aktuell konversation till minnesservern
+async function saveCurrentConversation() {
+  try {
+    if (!currentConversation.messages || currentConversation.messages.length === 0) {
+      return;
+    }
+    
+    // Extrahera den första user-frågan för att använda som titel
+    const firstUserMessage = currentConversation.messages.find(msg => msg.role === 'user');
+    const title = firstUserMessage 
+      ? firstUserMessage.content.substring(0, 50) + (firstUserMessage.content.length > 50 ? '...' : '')
+      : `Konversation ${conversationId}`;
+    
+    // Förbered data för att spara
+    const data = {
+      id: conversationId,
+      messages: currentConversation.messages,
+      metadata: {
+        title,
+        tags: ['auto-sparad'],
+        timestamp: new Date().toISOString()
+      }
+    };
+    
+    // Skicka till minnesservern
+    const result = await fetchMemory('conversation', 'POST', data);
+    logToFile(`Konversation automatiskt sparad med ID: ${result.id} (${currentConversation.messages.length} meddelanden)`);
+    
+    // Återställ efter sparande
+    conversationId = null;
+    currentConversation = { messages: [], hasUser: false, hasAssistant: false };
+    
+    return result.id;
+  } catch (error) {
+    logToFile(`Fel vid sparande av konversation: ${error.message}`);
+    return null;
+  }
+}
+
+// Periodiskt spara konversationen om den har varit inaktiv ett tag
+let lastActivity = Date.now();
+const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minuter
+
+function checkInactivity() {
+  const now = Date.now();
+  if (now - lastActivity > INACTIVITY_TIMEOUT) {
+    if (currentConversation.hasUser && currentConversation.hasAssistant) {
+      saveCurrentConversation()
+        .then(id => {
+          if (id) logToFile(`Konversation sparad efter inaktivitet med ID: ${id}`);
+        })
+        .catch(err => logToFile(`Kunde inte spara konversation efter inaktivitet: ${err.message}`));
+    }
+  }
 }
 
 // Skapa MCP-server
@@ -245,20 +367,35 @@ server.resource(
   }
 );
 
+// Lyssna på serverhändelser för att spåra kommunikation
+server.addListener('receivedMessage', message => {
+  lastActivity = Date.now();
+  trackMessage(message)
+    .catch(err => logToFile(`Fel vid hantering av mottaget meddelande: ${err.message}`));
+});
+
+server.addListener('sentMessage', message => {
+  lastActivity = Date.now();
+  trackMessage(message)
+    .catch(err => logToFile(`Fel vid hantering av skickat meddelande: ${err.message}`));
+});
+
 // Starta servern
 async function startServer() {
   try {
-    logToFile('Startar MCP-servern med STDIO-transport');
+    logToFile('Startar MCP-servern med STDIO-transport och automatisk konversationssparning');
     
+    // Skapa och anslut transportlagret
     const transport = new StdioServerTransport();
     await server.connect(transport);
     
-    logToFile('MCP-server ansluten och redo');
+    logToFile('MCP-server ansluten och redo med automatisk konversationssparning aktiverad');
     
-    // Skicka periodiska livstecken
+    // Skicka periodiska livstecken och kontrollera inaktivitet
     setInterval(() => {
       logToFile('MCP-server körs fortfarande');
-    }, 60000);
+      checkInactivity();
+    }, 60000); // Varje minut
     
   } catch (error) {
     logToFile(`FEL vid serverstart: ${error.message}`);

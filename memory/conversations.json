@@ -82,5 +82,172 @@
       "projektPath": "/c%3A/Users/david/Documents/FSU23D/Egna%20Projekt/SAM-Screamm_AI_Memory"
     },
     "lastUpdated": "2025-05-21T08:38:38.685Z"
+  },
+  "test-auto-save": {
+    "id": "test-auto-save",
+    "messages": [
+      {
+        "content": "�r detta ett automatiskt test av minnesservern?",
+        "role": "user"
+      },
+      {
+        "content": "Ja, detta �r en automatisk test av minnesfunktionen.",
+        "role": "assistant"
+      }
+    ],
+    "metadata": {
+      "tags": [
+        "test",
+        "auto-save"
+      ],
+      "title": "Test av automatisk konversationssparning"
+    },
+    "lastUpdated": "2025-05-22T11:38:32.378Z"
+  },
+  "conv-1747913950364-18e41037": {
+    "id": "conv-1747913950364-18e41037",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Detta �r ett test av den automatiska konversationssparningsfunktionen",
+        "timestamp": "2025-05-22T11:39:10.364Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett automatiskt genererat svar från en simulerad MCP-förfrågan.",
+        "timestamp": "2025-05-22T11:39:10.365Z"
+      }
+    ],
+    "metadata": {
+      "title": "Detta �r ett test av den automatiska konversations",
+      "tags": [
+        "auto-sparad"
+      ],
+      "source": "mcp-auto-save"
+    },
+    "lastUpdated": "2025-05-22T11:39:10.365Z"
+  },
+  "conv-1747913959065-18e41037": {
+    "id": "conv-1747913959065-18e41037",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Detta �r ett test av den automatiska konversationssparningsfunktionen",
+        "timestamp": "2025-05-22T11:39:19.066Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Ja, detta �r ett tidigare svar.",
+        "timestamp": "2025-05-22T11:39:19.066Z"
+      },
+      {
+        "role": "user",
+        "content": "Forts�tter vi konversationen h�r?",
+        "timestamp": "2025-05-22T11:39:19.066Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett automatiskt genererat svar från en simulerad MCP-förfrågan.",
+        "timestamp": "2025-05-22T11:39:19.066Z"
+      }
+    ],
+    "metadata": {
+      "title": "Detta �r ett test av den automatiska konversations",
+      "tags": [
+        "auto-sparad"
+      ],
+      "source": "mcp-auto-save"
+    },
+    "lastUpdated": "2025-05-22T11:39:19.066Z"
+  },
+  "conv-1747914031083-d25dedc5": {
+    "id": "conv-1747914031083-d25dedc5",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Detta �r ett test av den f�rb�ttrade automatiska konversationssparningsfunktionen",
+        "timestamp": "2025-05-22T11:40:31.083Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett automatiskt genererat svar från en simulerad MCP-förfrågan.",
+        "timestamp": "2025-05-22T11:40:31.085Z"
+      }
+    ],
+    "metadata": {
+      "title": "Detta �r ett test av den f�rb�ttrade automatiska k",
+      "tags": [
+        "auto-sparad"
+      ],
+      "source": "mcp-auto-save"
+    },
+    "lastUpdated": "2025-05-22T11:40:31.085Z"
+  },
+  "conv-1747914031089-g2zmfk2b": {
+    "id": "conv-1747914031089-g2zmfk2b",
+    "messages": [
+      {
+        "content": "Detta �r ett test av den f�rb�ttrade automatiska konversationssparningsfunktionen",
+        "role": "user",
+        "timestamp": "2025-05-22T11:40:31.089Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett automatiskt genererat svar från en simulerad MCP-förfrågan.",
+        "timestamp": "2025-05-22T11:40:31.089Z"
+      }
+    ],
+    "metadata": {
+      "title": "Detta �r ett test av den f�rb�ttrade automatiska k",
+      "tags": [
+        "auto-sparad",
+        "test-endpoint"
+      ],
+      "source": "mcp-test-endpoint"
+    },
+    "lastUpdated": "2025-05-22T11:40:31.089Z"
+  },
+  "auto-1747914072543-tb1j3": {
+    "id": "auto-1747914072543-tb1j3",
+    "messages": [
+      {
+        "content": "Detta �r ett test av den f�renklade automatiska konversationssparningsfunktionen",
+        "role": "user",
+        "timestamp": "2025-05-22T11:41:12.545Z"
+      }
+    ],
+    "metadata": {
+      "title": "Detta �r ett test av den f�renklade automatiska ko",
+      "tags": [
+        "auto-sparad"
+      ],
+      "source": "express-middleware",
+      "savedAt": "2025-05-22T11:41:12.545Z"
+    },
+    "lastUpdated": "2025-05-22T11:41:12.545Z"
+  },
+  "conv-1747914072653-fl3kk6ot": {
+    "id": "conv-1747914072653-fl3kk6ot",
+    "messages": [
+      {
+        "content": "Detta �r ett test av den f�renklade automatiska konversationssparningsfunktionen",
+        "role": "user",
+        "timestamp": "2025-05-22T11:41:12.654Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Detta är ett automatiskt genererat svar från en simulerad MCP-förfrågan.",
+        "timestamp": "2025-05-22T11:41:12.654Z"
+      }
+    ],
+    "metadata": {
+      "title": "Detta �r ett test av den f�renklade automatiska ko",
+      "tags": [
+        "auto-sparad",
+        "test-endpoint"
+      ],
+      "source": "mcp-test-endpoint"
+    },
+    "lastUpdated": "2025-05-22T11:41:12.654Z"
   }
 }
